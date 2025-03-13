@@ -7,30 +7,35 @@
 
 import UIKit
 import SnapKit
-import SofaAcademic
 
 class LeagueView: UIView {
 
-    let logoImageView: UIImageView = {
+    private let containerView: UIView = {
+        let view = UIView()
+        view.layer.masksToBounds = true
+        return view
+    }()
+
+    private let logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
-    let countryLabel: UILabel = {
+    private let countryLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Roboto-Bold", size: 14)
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = .black
         return label
     }()
 
-    let leagueLabel: UILabel = {
+    private let leagueLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont(name: "Roboto", size: 14)
-        label.textAlignment = .center
+        label.textAlignment = .left
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = .black
@@ -38,7 +43,7 @@ class LeagueView: UIView {
         return label
     }()
 
-    let arrowImageView: UIImageView = {
+    private let arrowImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(resource: ImageResource(name: "ic_pointer_right", bundle: .main))
         imageView.contentMode = .scaleAspectFit
@@ -56,31 +61,37 @@ class LeagueView: UIView {
     }
 
     private func setupUI() {
-        addSubview(logoImageView)
-        addSubview(countryLabel)
-        addSubview(leagueLabel)
-        addSubview(arrowImageView)
+        addSubview(containerView)
+        containerView.addSubview(logoImageView)
+        containerView.addSubview(countryLabel)
+        containerView.addSubview(leagueLabel)
+        containerView.addSubview(arrowImageView)
+
+        containerView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            make.height.equalTo(56) // Fiksna visina za cijeli blok
+        }
 
         logoImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(16)
-            make.top.equalToSuperview().offset(12)
+            make.centerY.equalToSuperview()
             make.width.height.equalTo(32)
         }
 
         countryLabel.snp.makeConstraints { make in
             make.left.equalTo(logoImageView.snp.right).offset(16)
-            make.centerY.equalTo(logoImageView)
+            make.centerY.equalToSuperview()
         }
 
         arrowImageView.snp.makeConstraints { make in
             make.left.equalTo(countryLabel.snp.right).offset(4)
-            make.centerY.equalTo(countryLabel)
+            make.centerY.equalToSuperview()
             make.width.height.equalTo(24)
         }
 
         leagueLabel.snp.makeConstraints { make in
             make.left.equalTo(arrowImageView.snp.right).offset(12)
-            make.centerY.equalTo(countryLabel)
+            make.centerY.equalToSuperview()
         }
     }
 
