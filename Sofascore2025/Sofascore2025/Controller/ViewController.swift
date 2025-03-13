@@ -11,6 +11,7 @@ import SofaAcademic
 class ViewController: UIViewController {
 
     private let leagueView = LeagueView()
+    private var events: [Event] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,11 +32,45 @@ class ViewController: UIViewController {
 
     private func fetchData() {
         let dataSource = Homework2DataSource()
-        let league = dataSource.laLigaLeague()
-        let events = dataSource.laLigaEvents()
+        let leagueData = dataSource.laLigaLeague()
+        let fetchedEvents = dataSource.laLigaEvents()
 
-        // Postavljamo podatke za ligu
-        leagueView.countryName = league.country?.name ?? "Nepoznato"
+        let country = Country(
+            id: leagueData.country?.id ?? 0,
+            name: leagueData.country?.name ?? "Nepoznato"
+        )
+
+        let league = League(
+            id: leagueData.id,
+            name: leagueData.name,
+            country: country.name,
+            logoUrl: leagueData.logoUrl
+        )
+
+        self.events = fetchedEvents.map { event in
+            let eventCountry = Country(
+                id: event.league?.country?.id ?? country.id,
+                name: event.league?.country?.name ?? country.name
+            )
+
+            return Event(
+                id: event.id,
+                homeTeam: event.homeTeam.name,
+                awayTeam: event.awayTeam.name,
+                league: League(
+                    id: event.league?.id ?? league.id,
+                    name: event.league?.name ?? league.name,
+                    country: eventCountry.name,
+                    logoUrl: event.league?.logoUrl ?? league.logoUrl
+                ),
+                status: String(describing: event.status),
+                startTimestamp: event.startTimestamp,
+                homeScore: event.homeScore ?? 0,
+                awayScore: event.awayScore ?? 0
+            )
+        }
+
+        leagueView.countryName = league.country
         leagueView.leagueName = league.name
 
         if let logoUrl = league.logoUrl {
@@ -44,14 +79,22 @@ class ViewController: UIViewController {
             }
         }
 
-        // Dodajemo utakmice
+        updateUI()
+    }
+
+
+    private func updateUI() {
         var previousView: UIView = leagueView
 
         for event in events {
             let matchView = MatchView()
-            matchView.homeTeamName = event.homeTeam.name
-            matchView.awayTeamName = event.awayTeam.name
-
+            matchView.homeTeamName = event.homeTeam
+            matchView.awayTeamName = event.awayTeam
+            matchView.homeScoreName = String(event.homeScore)
+            matchView.awayScoreName = String(event.awayScore)
+            matchView.matchTimestamp = event.startTimestamp 
+            matchView.matchStatus = event.status
+            
             view.addSubview(matchView)
 
             matchView.snp.makeConstraints { make in
@@ -82,4 +125,3 @@ class ViewController: UIViewController {
         }.resume()
     }
 }
-

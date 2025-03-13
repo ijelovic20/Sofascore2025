@@ -69,7 +69,7 @@ class LeagueView: UIView {
 
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(56) // Fiksna visina za cijeli blok
+            make.height.equalTo(56)
         }
 
         logoImageView.snp.makeConstraints { make in
