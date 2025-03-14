@@ -67,6 +67,21 @@ class MatchView: UIView {
         view.backgroundColor = .lightGray
         return view
     }()
+    
+    private let homeTeamImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+
+    private let awayTeamImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+
 
     private func setupUI() {
         addSubview(matchTimeLabel)
@@ -76,6 +91,22 @@ class MatchView: UIView {
         addSubview(awayTeamLabel)
         addSubview(homeScoreLabel)
         addSubview(awayScoreLabel)
+        addSubview(homeTeamImageView)
+        addSubview(awayTeamImageView)
+
+        homeTeamImageView.snp.makeConstraints { make in
+            make.centerY.equalTo(homeTeamLabel) 
+            make.right.equalTo(homeTeamLabel.snp.left).offset(-8)
+            make.width.height.equalTo(16)
+        }
+
+        awayTeamImageView.snp.makeConstraints { make in
+            make.centerY.equalTo(awayTeamLabel)
+            make.right.equalTo(awayTeamLabel.snp.left).offset(-8)
+            make.width.height.equalTo(16)
+        }
+
+
 
         matchTimeLabel.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(4)
@@ -83,7 +114,7 @@ class MatchView: UIView {
         }
 
         matchStatusLabel.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(4)
+            make.centerX.equalTo(matchTimeLabel)
             make.top.equalTo(matchTimeLabel.snp.bottom).offset(4)
         }
 
@@ -213,5 +244,18 @@ class MatchView: UIView {
         formatter.timeZone = .current
         return formatter.string(from: date)
     }
+    
+    var homeTeamImage: UIImage? {
+        didSet {
+            homeTeamImageView.image = homeTeamImage
+        }
+    }
+
+    var awayTeamImage: UIImage? {
+        didSet {
+            awayTeamImageView.image = awayTeamImage
+        }
+    }
+
 }
 

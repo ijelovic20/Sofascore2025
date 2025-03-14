@@ -47,28 +47,8 @@ class ViewController: UIViewController {
             logoUrl: leagueData.logoUrl
         )
 
-        self.events = fetchedEvents.map { event in
-            let eventCountry = Country(
-                id: event.league?.country?.id ?? country.id,
-                name: event.league?.country?.name ?? country.name
-            )
+        self.events = fetchedEvents.map { Event(from: $0) }
 
-            return Event(
-                id: event.id,
-                homeTeam: event.homeTeam.name,
-                awayTeam: event.awayTeam.name,
-                league: League(
-                    id: event.league?.id ?? league.id,
-                    name: event.league?.name ?? league.name,
-                    country: eventCountry.name,
-                    logoUrl: event.league?.logoUrl ?? league.logoUrl
-                ),
-                status: String(describing: event.status),
-                startTimestamp: event.startTimestamp,
-                homeScore: event.homeScore ?? 0,
-                awayScore: event.awayScore ?? 0
-            )
-        }
 
         leagueView.countryName = league.country
         leagueView.leagueName = league.name
@@ -88,13 +68,21 @@ class ViewController: UIViewController {
 
         for event in events {
             let matchView = MatchView()
-            matchView.homeTeamName = event.homeTeam
-            matchView.awayTeamName = event.awayTeam
+            matchView.homeTeamName = event.homeTeam.name
+            matchView.awayTeamName = event.awayTeam.name
             matchView.homeScoreName = String(event.homeScore)
             matchView.awayScoreName = String(event.awayScore)
-            matchView.matchTimestamp = event.startTimestamp 
+            matchView.matchTimestamp = event.startTimestamp
             matchView.matchStatus = event.status
-            
+
+            fetchImage(from: event.homeTeam.logoUrl ?? "") { image in
+                matchView.homeTeamImage = image
+            }
+
+            fetchImage(from: event.awayTeam.logoUrl ?? "") { image in
+                matchView.awayTeamImage = image
+            }
+
             view.addSubview(matchView)
 
             matchView.snp.makeConstraints { make in
@@ -105,7 +93,6 @@ class ViewController: UIViewController {
             previousView = matchView
         }
     }
-
 
     private func fetchImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
         guard let url = URL(string: urlString) else {
