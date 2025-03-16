@@ -7,8 +7,9 @@
 
 import UIKit
 import SnapKit
+import SofaAcademic
 
-class LeagueView: UIView {
+class LeagueView: BaseView {
 
     private let containerView: UIView = {
         let view = UIView()
@@ -24,20 +25,16 @@ class LeagueView: UIView {
 
     private let countryLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Roboto-Bold", size: 14)
+        label.font = .robotoBold14
         label.textAlignment = .left
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
         label.textColor = .black
         return label
     }()
 
     private let leagueLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont(name: "Roboto", size: 14)
+        label.font = .robotoRegular14
         label.textAlignment = .left
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
         label.textColor = .black
         label.alpha = 0.4
         return label
@@ -50,49 +47,51 @@ class LeagueView: UIView {
         return imageView
     }()
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setupUI()
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
-    }
-
-    private func setupUI() {
+    override func addViews() {
         addSubview(containerView)
         containerView.addSubview(logoImageView)
         containerView.addSubview(countryLabel)
         containerView.addSubview(leagueLabel)
         containerView.addSubview(arrowImageView)
-
+    }
+    
+    override func styleViews() {
+    }
+    
+    override func setupConstraints() {
         containerView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
-            make.height.equalTo(56)
         }
 
         logoImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().offset(16)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(32)
+            make.leading.equalToSuperview().offset(16)
+            make.top.equalToSuperview().offset(12)
+            make.bottom.equalToSuperview().inset(12)
+            make.size.equalTo(32)
         }
 
         countryLabel.snp.makeConstraints { make in
-            make.left.equalTo(logoImageView.snp.right).offset(16)
-            make.centerY.equalToSuperview()
+            make.leading.equalTo(logoImageView.snp.trailing).offset(32)
+            make.centerY.equalTo(logoImageView)
         }
 
         arrowImageView.snp.makeConstraints { make in
-            make.left.equalTo(countryLabel.snp.right).offset(4)
-            make.centerY.equalToSuperview()
-            make.width.height.equalTo(24)
+            make.leading.equalTo(countryLabel.snp.trailing)
+            make.centerY.equalTo(logoImageView)
+            make.size.equalTo(24)
         }
 
         leagueLabel.snp.makeConstraints { make in
-            make.left.equalTo(arrowImageView.snp.right).offset(12)
+            make.leading.equalTo(arrowImageView.snp.trailing)
             make.centerY.equalToSuperview()
+            make.trailing.lessThanOrEqualToSuperview().inset(16)
         }
+    }
+
+    override func setupGestureRecognizers() {
+    }
+
+    override func setupBinding() {
     }
 
     var countryName: String? {

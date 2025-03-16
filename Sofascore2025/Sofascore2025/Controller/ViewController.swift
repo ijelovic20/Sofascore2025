@@ -12,6 +12,7 @@ class ViewController: UIViewController {
 
     private let leagueView = LeagueView()
     private var events: [Event] = []
+    private let dataSource = Homework2DataSource()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,13 +26,12 @@ class ViewController: UIViewController {
         
         leagueView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
-            make.left.equalToSuperview().offset(16)
-            make.right.equalToSuperview().offset(-16)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
         }
     }
 
     private func fetchData() {
-        let dataSource = Homework2DataSource()
         let leagueData = dataSource.laLigaLeague()
         let fetchedEvents = dataSource.laLigaEvents()
 

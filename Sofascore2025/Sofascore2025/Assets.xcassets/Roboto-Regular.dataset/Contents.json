@@ -1,7 +1,7 @@
 {
-  "images" : [
+  "data" : [
     {
-      "filename" : "ic_pointer_right.svg",
+      "filename" : "Roboto-Regular.ttf",
       "idiom" : "universal"
     }
   ],
