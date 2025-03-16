@@ -11,42 +11,21 @@ import SofaAcademic
 
 class LeagueView: BaseView {
 
-    private let containerView: UIView = {
-        let view = UIView()
-        view.layer.masksToBounds = true
-        return view
-    }()
-
-    private let logoImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
-    private let countryLabel: UILabel = {
-        let label = UILabel()
-        label.font = .robotoBold14
-        label.textAlignment = .left
-        label.textColor = .black
-        return label
-    }()
-
-    private let leagueLabel: UILabel = {
-        let label = UILabel()
-        label.font = .robotoRegular14
-        label.textAlignment = .left
-        label.textColor = .black
-        label.alpha = 0.4
-        return label
-    }()
-
-    private let arrowImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(resource: ImageResource(name: "ic_pointer_right", bundle: .main))
-        imageView.contentMode = .scaleAspectFit
-        return imageView
-    }()
-
+    private let containerView = UIView()
+    private let logoImageView = UIImageView()
+    private let countryLabel = UILabel()
+    private let leagueLabel = UILabel()
+    private let arrowImageView = UIImageView()
+    
+    func configure(with viewModel: LeagueViewModel) {
+        countryLabel.text = viewModel.countryName
+        leagueLabel.text = viewModel.leagueName
+        
+        if let logoUrlString = viewModel.logoUrl, let url = URL(string: logoUrlString) {
+            logoImageView.setImageURL(url)
+        }
+    }
+    
     override func addViews() {
         addSubview(containerView)
         containerView.addSubview(logoImageView)
@@ -56,6 +35,14 @@ class LeagueView: BaseView {
     }
     
     override func styleViews() {
+        countryLabel.font = .robotoBold14
+        leagueLabel.font = .robotoRegular14
+
+        countryLabel.textColor = .customBlack
+        leagueLabel.textColor = .customBlack
+
+        arrowImageView.image = UIImage(named: "ic_pointer_right")
+        arrowImageView.contentMode = .scaleAspectFit
     }
     
     override func setupConstraints() {

@@ -11,8 +11,8 @@ import SofaAcademic
 class ViewController: UIViewController {
 
     private let leagueView = LeagueView()
-    private var events: [Event] = []
     private let dataSource = Homework2DataSource()
+    private var eventViewModels: [EventViewModel] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,82 +33,39 @@ class ViewController: UIViewController {
 
     private func fetchData() {
         let leagueData = dataSource.laLigaLeague()
-        let fetchedEvents = dataSource.laLigaEvents()
+        let fetchedSofaEvents = dataSource.laLigaEvents()
 
-        let country = Country(
-            id: leagueData.country?.id ?? 0,
-            name: leagueData.country?.name ?? "Nepoznato"
-        )
-
-        let league = League(
-            id: leagueData.id,
-            name: leagueData.name,
-            country: country.name,
+        let viewModel = LeagueViewModel(
+            leagueName: leagueData.name,
+            countryName: leagueData.country?.name ?? "Nepoznato",
             logoUrl: leagueData.logoUrl
         )
 
-        self.events = fetchedEvents.map { Event(from: $0) }
+        leagueView.configure(with: viewModel)
 
+        self.eventViewModels = fetchedSofaEvents
+            .map { EventViewModel(event: $0) }
 
-        leagueView.countryName = league.country
-        leagueView.leagueName = league.name
-
-        if let logoUrl = league.logoUrl {
-            fetchImage(from: logoUrl) { image in
-                self.leagueView.logoImage = image
-            }
-        }
-
-        updateUI()
+        self.setEvents(self.eventViewModels)
     }
 
 
-    private func updateUI() {
+    private func setEvents(_ viewModels: [EventViewModel]) {
         var previousView: UIView = leagueView
 
-        for event in events {
-            let matchView = MatchView()
-            matchView.homeTeamName = event.homeTeam.name
-            matchView.awayTeamName = event.awayTeam.name
-            matchView.homeScoreName = String(event.homeScore)
-            matchView.awayScoreName = String(event.awayScore)
-            matchView.matchTimestamp = event.startTimestamp
-            matchView.matchStatus = event.status
+        for viewModel in eventViewModels {
+            let eventView = EventView()
+            
+            eventView.configure(with: viewModel)
+            
+            view.addSubview(eventView)
 
-            fetchImage(from: event.homeTeam.logoUrl ?? "") { image in
-                matchView.homeTeamImage = image
-            }
-
-            fetchImage(from: event.awayTeam.logoUrl ?? "") { image in
-                matchView.awayTeamImage = image
-            }
-
-            view.addSubview(matchView)
-
-            matchView.snp.makeConstraints { make in
+            eventView.snp.makeConstraints { make in
                 make.left.right.equalToSuperview().inset(16)
                 make.top.equalTo(previousView.snp.bottom).offset(12)
             }
 
-            previousView = matchView
+            previousView = eventView
         }
-    }
-
-    private func fetchImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(nil)
-            return
-        }
-        URLSession.shared.dataTask(with: url) { data, _, _ in
-            if let data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    completion(image)
-                }
-            } else {
-                DispatchQueue.main.async {
-                    completion(nil)
-                }
-            }
-        }.resume()
     }
 }
