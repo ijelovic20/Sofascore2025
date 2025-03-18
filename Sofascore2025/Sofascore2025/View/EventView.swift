@@ -38,9 +38,10 @@ class EventView: BaseView {
             $0.font = .robotoRegular14
             $0.textColor = .customBlack
         }
-
+        homeScoreLabel.textAlignment = .right
+        awayScoreLabel.textAlignment = .right
+        
         matchTimeLabel.alpha = 0.4
-        matchStatusLabel.alpha = 0.6
         divider.backgroundColor = .lightGray
 
         [homeTeamImageView, awayTeamImageView].forEach {
@@ -50,107 +51,91 @@ class EventView: BaseView {
     }
 
     override func setupConstraints() {
-        matchTimeLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(8)
-            make.centerX.equalTo(divider.snp.leading).multipliedBy(0.5)
+        matchTimeLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().offset(8)
+            $0.centerX.equalTo(divider.snp.leading).multipliedBy(0.5)
         }
 
-        matchStatusLabel.snp.makeConstraints { make in
-            make.top.equalTo(matchTimeLabel.snp.bottom).offset(4)
-            make.centerX.equalTo(matchTimeLabel)
+        matchStatusLabel.snp.makeConstraints {
+            $0.top.equalTo(matchTimeLabel.snp.bottom).offset(4)
+            $0.centerX.equalTo(matchTimeLabel)
         }
 
-        divider.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(63)
-            make.top.equalToSuperview().offset(8)
-            make.width.equalTo(1)
-            make.height.equalTo(40)
+        divider.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(63)
+            $0.top.equalToSuperview().offset(8)
+            $0.width.equalTo(1)
+            $0.height.equalTo(40)
         }
 
-        homeTeamImageView.snp.makeConstraints { make in
-            make.centerY.equalTo(homeTeamLabel)
-            make.trailing.equalTo(homeTeamLabel.snp.leading).offset(-8)
-            make.size.equalTo(16)
+        homeTeamImageView.snp.remakeConstraints {
+            $0.top.equalTo(divider.snp.top)
+            $0.leading.equalTo(divider.snp.trailing).offset(16)
+            $0.size.equalTo(16)
         }
 
-        awayTeamImageView.snp.makeConstraints { make in
-            make.centerY.equalTo(awayTeamLabel)
-            make.trailing.equalTo(awayTeamLabel.snp.leading).offset(-8)
-            make.size.equalTo(16)
+        awayTeamImageView.snp.remakeConstraints {
+            $0.bottom.equalTo(divider.snp.bottom)
+            $0.leading.equalTo(divider.snp.trailing).offset(16)
+            $0.size.equalTo(16)
         }
 
-        homeTeamLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(104)
-            make.top.equalToSuperview().offset(8)
+        homeTeamLabel.snp.makeConstraints {
+            $0.leading.equalTo(homeTeamImageView.snp.trailing).offset(8)
+            $0.centerY.equalTo(homeTeamImageView)
+            $0.width.equalTo(192)
         }
 
-        awayTeamLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(104)
-            make.top.equalTo(homeTeamLabel.snp.bottom).offset(8)
-            make.bottom.equalToSuperview().offset(-8)
+        awayTeamLabel.snp.makeConstraints {
+            $0.leading.equalTo(awayTeamImageView.snp.trailing).offset(8)
+            $0.top.equalTo(homeTeamLabel.snp.bottom).offset(8)
+            $0.width.equalTo(192)
         }
 
-        homeScoreLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.top.equalToSuperview().offset(8)
+        homeScoreLabel.snp.makeConstraints {
+            $0.width.equalTo(32)
+            $0.centerY.equalTo(homeTeamLabel)
+            $0.leading.equalTo(homeTeamLabel.snp.trailing).offset(16)
         }
 
-        awayScoreLabel.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.top.equalTo(homeScoreLabel.snp.bottom).offset(8)
-            make.bottom.equalToSuperview().offset(-8)
+        awayScoreLabel.snp.makeConstraints {
+            $0.width.equalTo(32)
+            $0.centerY.equalTo(awayTeamLabel)
+            $0.leading.equalTo(awayTeamLabel.snp.trailing).offset(16)
+        }
+
+        self.snp.makeConstraints {
+            $0.bottom.equalTo(awayScoreLabel.snp.bottom).offset(8)
         }
     }
 
-    override func setupGestureRecognizers() {}
+    func configure(with viewModel: EventViewModel,
+                   statusText: String,
+                   statusColor: UIColor,
+                   homeAlpha: CGFloat,
+                   awayAlpha: CGFloat) {
 
-    override func setupBinding() {}
-
-    func configure(with viewModel: EventViewModel) {
         homeTeamLabel.text = viewModel.homeTeamName
         awayTeamLabel.text = viewModel.awayTeamName
         homeScoreLabel.text = "\(viewModel.homeScoreText)"
         awayScoreLabel.text = "\(viewModel.awayScoreText)"
         matchTimeLabel.text = viewModel.formattedTime
-
-        resetAlpha()
-        matchStatusLabel.textColor = .customBlack
-        homeScoreLabel.textColor = .customBlack
-        awayScoreLabel.textColor = .customBlack
-
-        switch viewModel.matchStatus {
-        case .notStarted:
-            matchStatusLabel.text = "-"
-            homeScoreLabel.text = ""
-            awayScoreLabel.text = ""
-
-        case .finished:
-            matchStatusLabel.text = "FT"
-            if let homeScore = Int(viewModel.homeScoreText),
-               let awayScore = Int(viewModel.awayScoreText) {
-                if homeScore > awayScore {
-                    awayTeamLabel.alpha = 0.4
-                    awayScoreLabel.alpha = 0.4
-                } else if awayScore > homeScore {
-                    homeTeamLabel.alpha = 0.4
-                    homeScoreLabel.alpha = 0.4
-                } else {
-                    resetAlpha()
-                }
-            }
-
-        case .inProgress:
-            matchStatusLabel.textColor = .customRed
-            homeScoreLabel.textColor = .customRed
-            awayScoreLabel.textColor = .customRed
-            if let matchMinute = viewModel.matchMinute {
-                matchStatusLabel.text = "\(matchMinute)'"
-            }
-
-        default:
-            matchStatusLabel.text = "-"
+        matchStatusLabel.text = statusText
+        
+        if(statusText != "-" && statusText != "FT"){
+            matchStatusLabel.alpha = 1
+        } else {
+            matchStatusLabel.alpha = 0.4
         }
 
+        matchStatusLabel.textColor = statusColor
+        homeScoreLabel.textColor = statusColor
+        awayScoreLabel.textColor = statusColor
+        homeTeamLabel.alpha = homeAlpha
+        homeScoreLabel.alpha = homeAlpha
+        awayTeamLabel.alpha = awayAlpha
+        awayScoreLabel.alpha = awayAlpha
+        
         if let homeURL = viewModel.homeTeamLogoURL {
             homeTeamImageView.setImageURL(homeURL)
         }
@@ -158,12 +143,5 @@ class EventView: BaseView {
         if let awayURL = viewModel.awayTeamLogoURL {
             awayTeamImageView.setImageURL(awayURL)
         }
-    }
-
-    private func resetAlpha() {
-        homeTeamLabel.alpha = 1
-        awayTeamLabel.alpha = 1
-        homeScoreLabel.alpha = 1
-        awayScoreLabel.alpha = 1
     }
 }

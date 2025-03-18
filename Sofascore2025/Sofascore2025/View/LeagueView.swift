@@ -21,8 +21,8 @@ class LeagueView: BaseView {
         countryLabel.text = viewModel.countryName
         leagueLabel.text = viewModel.leagueName
         
-        if let logoUrlString = viewModel.logoUrl, let url = URL(string: logoUrlString) {
-            logoImageView.setImageURL(url)
+        if let logoUrl = viewModel.logoURL {
+            logoImageView.setImageURL(logoUrl)
         }
     }
     
@@ -46,56 +46,31 @@ class LeagueView: BaseView {
     }
     
     override func setupConstraints() {
-        containerView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+        containerView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
 
-        logoImageView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.top.equalToSuperview().offset(12)
-            make.bottom.equalToSuperview().inset(12)
-            make.size.equalTo(32)
+        logoImageView.snp.makeConstraints {
+            $0.leading.equalToSuperview().offset(16)
+            $0.top.equalToSuperview().offset(12)
+            $0.bottom.equalToSuperview().inset(12)
+            $0.size.equalTo(32)
         }
 
-        countryLabel.snp.makeConstraints { make in
-            make.leading.equalTo(logoImageView.snp.trailing).offset(32)
-            make.centerY.equalTo(logoImageView)
+        countryLabel.snp.makeConstraints {
+            $0.leading.equalTo(logoImageView.snp.trailing).offset(32)
+            $0.centerY.equalTo(logoImageView)
         }
 
-        arrowImageView.snp.makeConstraints { make in
-            make.leading.equalTo(countryLabel.snp.trailing)
-            make.centerY.equalTo(logoImageView)
-            make.size.equalTo(24)
+        arrowImageView.snp.makeConstraints {
+            $0.leading.equalTo(countryLabel.snp.trailing)
+            $0.centerY.equalTo(logoImageView)
+            $0.size.equalTo(24)
         }
 
-        leagueLabel.snp.makeConstraints { make in
-            make.leading.equalTo(arrowImageView.snp.trailing)
-            make.centerY.equalToSuperview()
-            make.trailing.lessThanOrEqualToSuperview().inset(16)
-        }
-    }
-
-    override func setupGestureRecognizers() {
-    }
-
-    override func setupBinding() {
-    }
-
-    var countryName: String? {
-        didSet {
-            countryLabel.text = countryName
-        }
-    }
-
-    var leagueName: String? {
-        didSet {
-            leagueLabel.text = leagueName
-        }
-    }
-
-    var logoImage: UIImage? {
-        didSet {
-            logoImageView.image = logoImage
+        leagueLabel.snp.makeConstraints {
+            $0.leading.equalTo(arrowImageView.snp.trailing)
+            $0.centerY.equalTo(arrowImageView)
         }
     }
 }
