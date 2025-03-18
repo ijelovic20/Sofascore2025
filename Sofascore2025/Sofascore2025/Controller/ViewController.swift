@@ -12,7 +12,6 @@ class ViewController: UIViewController {
 
     private let leagueView = LeagueView()
     private let dataSource = Homework2DataSource()
-    private var eventViewModels: [EventViewModel] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,27 +25,27 @@ class ViewController: UIViewController {
         
         leagueView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
-            $0.leading.equalToSuperview()
-            $0.trailing.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
         }
     }
 
     private func fetchData() {
-        let leagueData = dataSource.laLigaLeague()
+        let league = dataSource.laLigaLeague()
         let events = dataSource.laLigaEvents()
+        var eventViewModels: [EventViewModel] = []
 
         let viewModel = LeagueViewModel(
-            leagueName: leagueData.name,
-            countryName: leagueData.country?.name ?? "Nepoznato",
-            logoURL: URL(string: leagueData.logoUrl ?? "")
+            leagueName: league.name,
+            countryName: league.country?.name ?? "Nepoznato",
+            logoURL: URL(string: league.logoUrl ?? "")
         )
 
         leagueView.configure(with: viewModel)
 
-        self.eventViewModels = events
+        eventViewModels = events
             .map { EventViewModel(event: $0) }
 
-        self.setEvents(self.eventViewModels)
+        self.setEvents(eventViewModels)
     }
 
     private func setEvents(_ viewModels: [EventViewModel]) {
@@ -54,45 +53,13 @@ class ViewController: UIViewController {
 
         for viewModel in viewModels {
             let eventView = EventView()
-            let matchStatus = viewModel.matchStatus
-
-            var statusText = "-"
-            var statusColor: UIColor = .customBlack
-            var homeAlpha: CGFloat = 1
-            var awayAlpha: CGFloat = 1
-
-            switch matchStatus {
-            case .notStarted:
-                statusText = "-"
-            case .finished:
-                statusText = "FT"
-                if let home = Int(viewModel.homeScoreText),
-                    let away = Int(viewModel.awayScoreText) {
-                        if home > away {
-                            awayAlpha = 0.4
-                        } else if away > home {
-                            homeAlpha = 0.4
-                        }
-                    }
-            case .inProgress:
-                statusText = "\(viewModel.matchMinute ?? 0)'"
-                statusColor = .customRed
-            default:
-                statusText = "-"
-            }
-
-            eventView.configure(
-                with: viewModel,
-                statusText: statusText,
-                statusColor: statusColor,
-                homeAlpha: homeAlpha,
-                awayAlpha: awayAlpha
-            )
+            
+            eventView.configure(with: viewModel)
 
             view.addSubview(eventView)
             eventView.snp.makeConstraints {
-                $0.left.right.equalToSuperview().inset(4)
-                $0.top.equalTo(previousView.snp.bottom).offset(12)
+                $0.leading.trailing.equalToSuperview()
+                $0.top.equalTo(previousView.snp.bottom)
             }
             previousView = eventView
         }

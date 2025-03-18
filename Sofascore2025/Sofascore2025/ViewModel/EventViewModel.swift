@@ -20,6 +20,11 @@ struct EventViewModel {
     let awayTeamLogoURL: URL?
     let matchMinute: Int?
     let startTimestamp: Int
+    let homeAlpha: CGFloat
+    let awayAlpha: CGFloat
+    let statusColor: UIColor
+    let statusString: String
+    let statusAlpha: CGFloat
 
     init(event: Event) {
         self.homeTeamName = event.homeTeam.name
@@ -32,12 +37,50 @@ struct EventViewModel {
         self.awayTeamLogoURL = URL(string: event.awayTeam.logoUrl ?? "")
         self.startTimestamp = event.startTimestamp
 
-        if event.status == .inProgress {
+        var homeAlpha: CGFloat = 1.0
+        var awayAlpha: CGFloat = 1.0
+        var statusColor: UIColor = .customBlack
+        var matchMinute: Int? = nil
+        var statusString: String = "-"
+        var statusAlpha: CGFloat = 0.4
+
+        switch event.status {
+        case .inProgress:
             let currentTime = Int(Date().timeIntervalSince1970)
-            self.matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
-        } else {
-            self.matchMinute = nil
+            matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
+            statusString = "\(matchMinute ?? 0)′"
+            statusColor = .customRed
+            statusAlpha = 1.0
+
+        case .finished:
+            statusString = "FT"
+            statusAlpha = 0.4
+            if let homeScore = event.homeScore, let awayScore = event.awayScore {
+                if homeScore > awayScore {
+                    homeAlpha = 1.0
+                    awayAlpha = 0.4
+                } else if awayScore > homeScore {
+                    homeAlpha = 0.4
+                    awayAlpha = 1.0
+                }
+            }
+
+        case .notStarted:
+            statusString = "-"
+            statusAlpha = 0.4
+
+        case .halftime:
+            statusString = "HT"
+            statusColor = .customRed
+            statusAlpha = 1.0
         }
+
+        self.homeAlpha = homeAlpha
+        self.awayAlpha = awayAlpha
+        self.statusColor = statusColor
+        self.matchMinute = matchMinute
+        self.statusString = statusString
+        self.statusAlpha = statusAlpha
     }
 
     private static func formatTime(timestamp: Int) -> String {

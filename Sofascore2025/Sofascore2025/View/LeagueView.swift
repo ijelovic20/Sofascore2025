@@ -11,7 +11,6 @@ import SofaAcademic
 
 class LeagueView: BaseView {
 
-    private let containerView = UIView()
     private let logoImageView = UIImageView()
     private let countryLabel = UILabel()
     private let leagueLabel = UILabel()
@@ -27,11 +26,10 @@ class LeagueView: BaseView {
     }
     
     override func addViews() {
-        addSubview(containerView)
-        containerView.addSubview(logoImageView)
-        containerView.addSubview(countryLabel)
-        containerView.addSubview(leagueLabel)
-        containerView.addSubview(arrowImageView)
+        self.addSubview(logoImageView)
+        self.addSubview(countryLabel)
+        self.addSubview(leagueLabel)
+        self.addSubview(arrowImageView)
     }
     
     override func styleViews() {
@@ -46,9 +44,6 @@ class LeagueView: BaseView {
     }
     
     override func setupConstraints() {
-        containerView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-        }
 
         logoImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
@@ -69,6 +64,7 @@ class LeagueView: BaseView {
         }
 
         leagueLabel.snp.makeConstraints {
+            $0.trailing.lessThanOrEqualToSuperview().inset(16)
             $0.leading.equalTo(arrowImageView.snp.trailing)
             $0.centerY.equalTo(arrowImageView)
         }
