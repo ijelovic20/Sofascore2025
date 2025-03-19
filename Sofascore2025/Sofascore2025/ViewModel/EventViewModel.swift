@@ -45,36 +45,32 @@ struct EventViewModel {
         var statusAlpha: CGFloat = 0.4
 
         switch event.status {
-        case .inProgress:
-            let currentTime = Int(Date().timeIntervalSince1970)
-            matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
-            statusString = "\(matchMinute ?? 0)′"
-            statusColor = .customRed
-            statusAlpha = 1.0
-
-        case .finished:
-            statusString = "FT"
-            statusAlpha = 0.4
-            if let homeScore = event.homeScore, let awayScore = event.awayScore {
-                if homeScore > awayScore {
-                    homeAlpha = 1.0
-                    awayAlpha = 0.4
-                } else if awayScore > homeScore {
-                    homeAlpha = 0.4
-                    awayAlpha = 1.0
+            case .inProgress:
+                let currentTime = Int(Date().timeIntervalSince1970)
+                matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
+                statusString = "\(matchMinute ?? 0)′"
+                statusColor = .customRed
+                statusAlpha = 1.0
+            case .finished:
+                statusString = "FT"
+                statusAlpha = 0.4
+                if let homeScore = event.homeScore, let awayScore = event.awayScore {
+                    if homeScore > awayScore {
+                        homeAlpha = 1.0
+                        awayAlpha = 0.4
+                    } else if awayScore > homeScore {
+                        homeAlpha = 0.4
+                        awayAlpha = 1.0
+                    }
                 }
-            }
-
-        case .notStarted:
-            statusString = "-"
-            statusAlpha = 0.4
-
-        case .halftime:
-            statusString = "HT"
-            statusColor = .customRed
-            statusAlpha = 1.0
+            case .notStarted:
+                statusString = "-"
+                statusAlpha = 0.4
+            case .halftime:
+                statusString = "HT"
+                statusColor = .customRed
+                statusAlpha = 1.0
         }
-
         self.homeAlpha = homeAlpha
         self.awayAlpha = awayAlpha
         self.statusColor = statusColor

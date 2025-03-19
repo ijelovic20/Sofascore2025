@@ -10,7 +10,6 @@ import SnapKit
 import SofaAcademic
 
 class EventView: BaseView {
-
     private let matchTimeLabel = UILabel()
     private let homeTeamLabel = UILabel()
     private let awayTeamLabel = UILabel()
@@ -41,6 +40,7 @@ class EventView: BaseView {
         homeScoreLabel.textAlignment = .right
         awayScoreLabel.textAlignment = .right
         matchTimeLabel.textAlignment = .center
+        matchStatusLabel.textAlignment = .center
         
         matchTimeLabel.alpha = 0.4
         
@@ -53,20 +53,20 @@ class EventView: BaseView {
     }
 
     override func setupConstraints() {
-        
         matchTimeLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(10)
+            $0.centerY.equalTo(homeTeamImageView)
             $0.leading.equalToSuperview().inset(4)
             $0.width.equalTo(56)
         }
 
         matchStatusLabel.snp.makeConstraints {
-            $0.top.equalTo(matchTimeLabel.snp.bottom).offset(4)
+            $0.centerY.equalTo(awayTeamImageView)
             $0.centerX.equalTo(matchTimeLabel)
+            $0.width.equalTo(matchTimeLabel)
         }
 
         divider.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(63)
+            $0.leading.equalTo(matchTimeLabel.snp.trailing).offset(4)
             $0.top.bottom.equalToSuperview().inset(8)
             $0.width.equalTo(1)
         }
@@ -92,14 +92,15 @@ class EventView: BaseView {
 
         awayTeamLabel.snp.makeConstraints {
             $0.leading.equalTo(awayTeamImageView.snp.trailing).offset(8)
-            $0.top.equalTo(homeTeamLabel.snp.bottom).offset(8)
+            $0.centerY.equalTo(awayTeamImageView)
+            $0.centerX.equalTo(homeTeamLabel)
             $0.trailing.equalTo(awayScoreLabel.snp.leading).offset(16)
         }
 
         homeScoreLabel.snp.makeConstraints {
             $0.width.equalTo(32)
             $0.centerY.equalTo(homeTeamLabel)
-            $0.trailing.equalToSuperview().offset(-16)
+            $0.trailing.equalToSuperview().inset(16)
         }
 
         awayScoreLabel.snp.makeConstraints {
@@ -134,5 +135,4 @@ class EventView: BaseView {
             awayTeamImageView.setImageURL(awayURL)
         }
     }
-
 }

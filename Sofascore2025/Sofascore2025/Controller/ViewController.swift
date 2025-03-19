@@ -9,7 +9,6 @@ import UIKit
 import SofaAcademic
 
 class ViewController: UIViewController {
-
     private let leagueView = LeagueView()
     private let dataSource = Homework2DataSource()
 
@@ -31,31 +30,20 @@ class ViewController: UIViewController {
 
     private func fetchData() {
         let league = dataSource.laLigaLeague()
+        let leagueViewModel = LeagueViewModel(league: league)
+        leagueView.configure(with: leagueViewModel)
+
         let events = dataSource.laLigaEvents()
-        var eventViewModels: [EventViewModel] = []
-
-        let viewModel = LeagueViewModel(
-            leagueName: league.name,
-            countryName: league.country?.name ?? "Nepoznato",
-            logoURL: URL(string: league.logoUrl ?? "")
-        )
-
-        leagueView.configure(with: viewModel)
-
-        eventViewModels = events
-            .map { EventViewModel(event: $0) }
-
-        self.setEvents(eventViewModels)
+        self.setEvents(events)
     }
 
-    private func setEvents(_ viewModels: [EventViewModel]) {
+    private func setEvents(_ events: [Event]) {
         var previousView: UIView = leagueView
 
-        for viewModel in viewModels {
+        for event in events {
             let eventView = EventView()
+            eventView.configure(with: EventViewModel(event: event))
             
-            eventView.configure(with: viewModel)
-
             view.addSubview(eventView)
             eventView.snp.makeConstraints {
                 $0.leading.trailing.equalToSuperview()

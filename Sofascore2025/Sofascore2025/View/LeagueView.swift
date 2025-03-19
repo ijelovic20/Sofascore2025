@@ -10,7 +10,6 @@ import SnapKit
 import SofaAcademic
 
 class LeagueView: BaseView {
-
     private let logoImageView = UIImageView()
     private let countryLabel = UILabel()
     private let leagueLabel = UILabel()
@@ -38,13 +37,16 @@ class LeagueView: BaseView {
 
         countryLabel.textColor = .customBlack
         leagueLabel.textColor = .customBlack
+        
+        leagueLabel.alpha = 0.4
 
         arrowImageView.image = UIImage(named: "ic_pointer_right")
         arrowImageView.contentMode = .scaleAspectFit
+        arrowImageView.tintColor = .customBlack
+        arrowImageView.alpha = 0.4
     }
     
     override func setupConstraints() {
-
         logoImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
             $0.top.equalToSuperview().offset(12)
