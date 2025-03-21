@@ -87,14 +87,13 @@ class EventView: BaseView {
         homeTeamLabel.snp.makeConstraints {
             $0.leading.equalTo(homeTeamImageView.snp.trailing).offset(8)
             $0.centerY.equalTo(homeTeamImageView)
-            $0.trailing.equalTo(homeScoreLabel.snp.leading).offset(16)
+            $0.trailing.equalTo(homeScoreLabel.snp.leading).offset(-16)
         }
 
         awayTeamLabel.snp.makeConstraints {
             $0.leading.equalTo(awayTeamImageView.snp.trailing).offset(8)
             $0.centerY.equalTo(awayTeamImageView)
-            $0.centerX.equalTo(homeTeamLabel)
-            $0.trailing.equalTo(awayScoreLabel.snp.leading).offset(16)
+            $0.trailing.equalTo(awayScoreLabel.snp.leading).offset(-16)
         }
 
         homeScoreLabel.snp.makeConstraints {
