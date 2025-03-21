@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "ic_pointer_right.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
