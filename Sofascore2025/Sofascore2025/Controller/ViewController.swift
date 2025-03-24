@@ -11,6 +11,7 @@ import SofaAcademic
 class ViewController: UIViewController {
     private let leagueView = LeagueView()
     private let dataSource = Homework2DataSource()
+    private let menu = Menu()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,9 +22,16 @@ class ViewController: UIViewController {
 
     private func setupUI() {
         view.addSubview(leagueView)
+        view.addSubview(menu)
+        
+        menu.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(48)
+        }
         
         leagueView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(60)
             $0.leading.trailing.equalToSuperview()
         }
     }
