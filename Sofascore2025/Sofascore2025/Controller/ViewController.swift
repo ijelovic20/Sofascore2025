@@ -6,58 +6,55 @@
 //
 
 import UIKit
-import SofaAcademic
+//import SofaAcademic
+import SofaAcademic2
 
 class ViewController: UIViewController {
-    private let leagueView = LeagueView()
-    private let dataSource = Homework2DataSource()
+    private let dataSource = Homework3DataSource()
     private let menu = Menu()
+    private let tableView = UITableView(frame: .zero, style: .plain)
+    
+    var groupedEvents: [(league: League?, events: [Event])] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
         fetchData()
+        
+        tableView.separatorStyle = .none
+        tableView.sectionHeaderTopPadding = 0
     }
 
     private func setupUI() {
-        view.addSubview(leagueView)
         view.addSubview(menu)
-        
+        view.addSubview(tableView)
+
         menu.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(48)
         }
-        
-        leagueView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(60)
-            $0.leading.trailing.equalToSuperview()
+
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(menu.snp.bottom)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
+
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(EventTableViewCell.self, forCellReuseIdentifier: "EventCell")
     }
 
     private func fetchData() {
-        let league = dataSource.laLigaLeague()
-        let leagueViewModel = LeagueViewModel(league: league)
-        leagueView.configure(with: leagueViewModel)
-
-        let events = dataSource.laLigaEvents()
-        self.setEvents(events)
-    }
-
-    private func setEvents(_ events: [Event]) {
-        var previousView: UIView = leagueView
-
-        for event in events {
-            let eventView = EventView()
-            eventView.configure(with: EventViewModel(event: event))
-            
-            view.addSubview(eventView)
-            eventView.snp.makeConstraints {
-                $0.leading.trailing.equalToSuperview()
-                $0.top.equalTo(previousView.snp.bottom)
-            }
-            previousView = eventView
+        let allEvents = dataSource.events()
+        
+        let grouped = Dictionary(grouping: allEvents, by: { $0.league?.id ?? -1 })
+        
+        groupedEvents = grouped.compactMap { (id, events) in
+            guard let league = events.first?.league else { return nil }
+            return (league, events)
         }
+        tableView.reloadData()
     }
 }

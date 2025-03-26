@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SofaAcademic
+import SofaAcademic2
 
 struct LeagueViewModel {
     let leagueName: String

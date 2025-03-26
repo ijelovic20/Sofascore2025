@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		140EED292D821B6800F01CA3 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 140EED282D821B6800F01CA3 /* SnapKit */; };
 		140EED3B2D821F6800F01CA3 /* SofaAcademic in Frameworks */ = {isa = PBXBuildFile; productRef = 140EED3A2D821F6800F01CA3 /* SofaAcademic */; };
+		143FCC822D92085400A15479 /* SofaAcademic2 in Frameworks */ = {isa = PBXBuildFile; productRef = 143FCC812D92085400A15479 /* SofaAcademic2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 			files = (
 				140EED3B2D821F6800F01CA3 /* SofaAcademic in Frameworks */,
 				140EED292D821B6800F01CA3 /* SnapKit in Frameworks */,
+				143FCC822D92085400A15479 /* SofaAcademic2 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				140EED282D821B6800F01CA3 /* SnapKit */,
 				140EED3A2D821F6800F01CA3 /* SofaAcademic */,
+				143FCC812D92085400A15479 /* SofaAcademic2 */,
 			);
 			productName = Sofascore2025;
 			productReference = 1445C7FF2D7873F8005158BE /* Sofascore2025.app */;
@@ -119,6 +122,7 @@
 			packageReferences = (
 				140EED272D821B6800F01CA3 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				140EED392D821F6800F01CA3 /* XCRemoteSwiftPackageReference "academy" */,
+				143FCC802D92085400A15479 /* XCLocalSwiftPackageReference "../../hw3/academy2" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1445C8002D7873F8005158BE /* Products */;
@@ -349,6 +353,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		143FCC802D92085400A15479 /* XCLocalSwiftPackageReference "../../hw3/academy2" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../hw3/academy2;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		140EED272D821B6800F01CA3 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -378,6 +389,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 140EED392D821F6800F01CA3 /* XCRemoteSwiftPackageReference "academy" */;
 			productName = SofaAcademic;
+		};
+		143FCC812D92085400A15479 /* SofaAcademic2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SofaAcademic2;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
