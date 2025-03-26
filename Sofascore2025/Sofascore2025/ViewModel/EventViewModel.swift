@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import SofaAcademic2
+import SofaAcademic
 
 struct EventViewModel {
     let homeTeamName: String

@@ -6,8 +6,7 @@
 //
 
 import UIKit
-//import SofaAcademic
-import SofaAcademic2
+import SofaAcademic
 
 class ViewController: UIViewController {
     private let dataSource = Homework3DataSource()
