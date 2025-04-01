@@ -8,48 +8,95 @@
 import UIKit
 import SofaAcademic
 
-class ViewController: UIViewController {
-    private let leagueView = LeagueView()
-    private let dataSource = Homework2DataSource()
+class ViewController: UIViewController, BaseViewProtocol {
+    private let dataSource = Homework3DataSource()
+    private let menu = MenuView()
+    private let tableView = UITableView(frame: .zero, style: .plain)
+
+    var groupedEvents: [(league: League?, events: [Event])] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        setupUI()
+        
+        addViews()
+        styleViews()
+        setupConstraints()
+        
         fetchData()
     }
 
-    private func setupUI() {
-        view.addSubview(leagueView)
+    func addViews() {
+        view.addSubview(menu)
+        view.addSubview(tableView)
+    }
+
+    func styleViews() {
+        view.backgroundColor = .white
+        tableView.separatorStyle = .none
+        tableView.sectionHeaderTopPadding = 0
+        tableView.rowHeight = UITableView.automaticDimension
         
-        leagueView.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(12)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(EventTableViewCell.self, forCellReuseIdentifier: EventTableViewCell.reuseIdentifier)
+    }
+
+    func setupConstraints() {
+        menu.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(48)
+        }
+
+        tableView.snp.makeConstraints {
+            $0.top.equalTo(menu.snp.bottom)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
 
     private func fetchData() {
-        let league = dataSource.laLigaLeague()
-        let leagueViewModel = LeagueViewModel(league: league)
-        leagueView.configure(with: leagueViewModel)
+        let allEvents = dataSource.events()
+        groupedEvents = Dictionary(grouping: allEvents, by: { $0.league?.id ?? -1 })
+            .compactMap { (_, events) in
+                guard let league = events.first?.league else { return nil }
+                return (league, events)
+            }
+        tableView.reloadData()
+    }
+}
 
-        let events = dataSource.laLigaEvents()
-        self.setEvents(events)
+// MARK: - UITableViewDataSource
+extension ViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return groupedEvents.count
     }
 
-    private func setEvents(_ events: [Event]) {
-        var previousView: UIView = leagueView
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return groupedEvents[section].events.count
+    }
 
-        for event in events {
-            let eventView = EventView()
-            eventView.configure(with: EventViewModel(event: event))
-            
-            view.addSubview(eventView)
-            eventView.snp.makeConstraints {
-                $0.leading.trailing.equalToSuperview()
-                $0.top.equalTo(previousView.snp.bottom)
-            }
-            previousView = eventView
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: EventTableViewCell.reuseIdentifier, for: indexPath) as? EventTableViewCell else {
+            return UITableViewCell()
         }
+        
+        let event = groupedEvents[indexPath.section].events[indexPath.row]
+        cell.configure(with: EventViewModel(event: event))
+        
+        return cell
+    }
+}
+
+// MARK: - UITableViewDelegate
+extension ViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 56
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let league = groupedEvents[section].league else { return nil }
+        let header = LeagueView()
+        header.configure(with: LeagueViewModel(league: league))
+        return header
     }
 }

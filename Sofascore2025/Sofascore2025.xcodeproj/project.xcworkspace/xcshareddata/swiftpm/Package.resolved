@@ -1,13 +1,13 @@
 {
-  "originHash" : "7b8238ff8593e556aaff0b28d0d2265086b0c8b4aee14032eafb1a1f66592656",
+  "originHash" : "3eea015aef92f11773099d8b433438c0e3382f88a2274b1d8bc5388da0252dcc",
   "pins" : [
     {
       "identity" : "academy",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sofascore/academy.git",
       "state" : {
-        "branch" : "hw2",
-        "revision" : "dd8a8a0c3bf0cff1afbecb424c40ee1cf8afd2c0"
+        "branch" : "hw3",
+        "revision" : "40141ddad6c9b88b0fd6c00c31406731f2585350"
       }
     },
     {

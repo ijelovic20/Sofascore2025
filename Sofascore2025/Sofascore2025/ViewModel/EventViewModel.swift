@@ -12,8 +12,8 @@ import SofaAcademic
 struct EventViewModel {
     let homeTeamName: String
     let awayTeamName: String
-    let homeScoreText: String
-    let awayScoreText: String
+    var homeScoreText: String
+    var awayScoreText: String
     let formattedTime: String
     let matchStatus: EventStatus
     let homeTeamLogoURL: URL?
@@ -66,6 +66,8 @@ struct EventViewModel {
             case .notStarted:
                 statusString = "-"
                 statusAlpha = 0.4
+                self.homeScoreText = ""
+                self.awayScoreText = ""
             case .halftime:
                 statusString = "HT"
                 statusColor = .customRed
