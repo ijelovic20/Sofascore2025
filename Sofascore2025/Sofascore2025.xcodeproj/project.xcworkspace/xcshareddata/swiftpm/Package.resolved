@@ -1,5 +1,5 @@
 {
-  "originHash" : "21f34e5b271d5489826e54ee93a9790788bd43ff69640428e310bf01b0101ea6",
+  "originHash" : "3eea015aef92f11773099d8b433438c0e3382f88a2274b1d8bc5388da0252dcc",
   "pins" : [
     {
       "identity" : "academy",
@@ -7,7 +7,7 @@
       "location" : "https://github.com/sofascore/academy.git",
       "state" : {
         "branch" : "hw3",
-        "revision" : "d5f48300c97101864e5e42dad3ed6003418e9801"
+        "revision" : "40141ddad6c9b88b0fd6c00c31406731f2585350"
       }
     },
     {

@@ -32,6 +32,8 @@ class LeagueView: BaseView {
     }
     
     override func styleViews() {
+        self.backgroundColor = .white
+        
         countryLabel.font = .robotoBold14
         leagueLabel.font = .robotoRegular14
 
