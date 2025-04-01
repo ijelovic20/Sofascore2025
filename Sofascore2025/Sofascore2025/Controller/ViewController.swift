@@ -21,7 +21,8 @@ class ViewController: UIViewController, BaseViewProtocol {
         addViews()
         styleViews()
         setupConstraints()
-        setupBinding()
+        
+        fetchData()
     }
 
     func addViews() {
@@ -34,6 +35,10 @@ class ViewController: UIViewController, BaseViewProtocol {
         tableView.separatorStyle = .none
         tableView.sectionHeaderTopPadding = 0
         tableView.rowHeight = UITableView.automaticDimension
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(EventTableViewCell.self, forCellReuseIdentifier: EventTableViewCell.reuseIdentifier)
     }
 
     func setupConstraints() {
@@ -47,13 +52,6 @@ class ViewController: UIViewController, BaseViewProtocol {
             $0.top.equalTo(menu.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
-    }
-
-    func setupBinding() {
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(EventTableViewCell.self, forCellReuseIdentifier: EventTableViewCell.reuseIdentifier)
-        fetchData()
     }
 
     private func fetchData() {
@@ -78,7 +76,7 @@ extension ViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "EventCell", for: indexPath) as? EventTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: EventTableViewCell.reuseIdentifier, for: indexPath) as? EventTableViewCell else {
             return UITableViewCell()
         }
         

@@ -12,10 +12,6 @@ enum Sport: String, CaseIterable {
     case basketball = "Basketball"
     case americanFootball = "Am. Football"
     
-    var title: String {
-        return self.rawValue
-    }
-    
     var iconName: String {
         switch self {
         case .football:

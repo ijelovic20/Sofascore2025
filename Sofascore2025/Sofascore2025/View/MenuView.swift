@@ -11,21 +11,19 @@ import SofaAcademic
 import Combine
 
 class MenuView: BaseView {
-    
-    private var menuStack = UIStackView()
-    private var selectorView = UIView()
+    private let menuStack = UIStackView()
+    private let selectorView = UIView()
     private var menuItems: [MenuItemView] = []
     
     private var cancellables: Set<AnyCancellable> = []
 
     override func addViews() {
-        menuStack = UIStackView()
         menuStack.distribution = .fillEqually
         menuStack.backgroundColor = .systemBlue
         
         for sport in Sport.allCases {
             let item = MenuItemView()
-                .setTitle(sport.title)
+                .setTitle(sport.rawValue)
                 .setImage(sport.iconName)
             
             item.tapPublisher
@@ -34,12 +32,9 @@ class MenuView: BaseView {
                 }
                 .store(in: &cancellables)
             
-            item.isUserInteractionEnabled = true
             menuStack.addArrangedSubview(item)
             menuItems.append(item)
         }
-        
-        selectorView = UIView()
         selectorView.backgroundColor = .white
         menuStack.addSubview(selectorView)
         

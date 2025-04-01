@@ -11,7 +11,6 @@ import SofaAcademic
 import Combine
 
 final class MenuItemView: BaseView {
-
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
     
