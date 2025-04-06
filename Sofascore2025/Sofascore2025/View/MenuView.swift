@@ -1,10 +1,3 @@
-//
-//  Menu.swift
-//  Sofascore2025
-//
-//  Created by Ivona Jelovic on 21.03.2025..
-//
-
 import UIKit
 import SnapKit
 import SofaAcademic
@@ -19,7 +12,7 @@ class MenuView: BaseView {
 
     override func addViews() {
         menuStack.distribution = .fillEqually
-        menuStack.backgroundColor = .systemBlue
+        menuStack.backgroundColor = .customBlue
         
         for sport in Sport.allCases {
             let item = MenuItemView()
