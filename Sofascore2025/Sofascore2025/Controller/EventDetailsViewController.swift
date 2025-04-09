@@ -4,18 +4,20 @@ import SofaAcademic
 class EventDetailsViewController: UIViewController, BaseViewProtocol {
     private let event: EventViewModel
     private let league: LeagueViewModel
+    var sportName: String
     
     private lazy var eventDetailView: EventDetailView = {
-        let view = EventDetailView(event: event, league: league)
+        let view = EventDetailView(event: event, league: league, sportName: sportName)
         return view
     }()
     
-    init(event: EventViewModel, league: LeagueViewModel) {
+    init(event: EventViewModel, league: LeagueViewModel, sportName: String) {
         self.event = event
         self.league = league
+        self.sportName = sportName
         super.init(nibName: nil, bundle: nil)
         
-        eventDetailView = EventDetailView(event: event, league: league)
+        eventDetailView = EventDetailView(event: event, league: league, sportName: sportName)
         
         eventDetailView.configure(with: event, league: league)
         

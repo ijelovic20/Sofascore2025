@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SofaAcademic
 
 struct LeagueViewModel {
     let leagueName: String
@@ -15,7 +14,7 @@ struct LeagueViewModel {
 
     init(league: League) {
         self.leagueName = league.name
-        self.countryName = league.country?.name ?? "Nepoznato"
-        self.logoURL = URL(string: league.logoUrl ?? "")
+        self.countryName = league.country.name
+        self.logoURL = URL(string: league.logoUrl)
     }
 }

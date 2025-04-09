@@ -2,25 +2,53 @@ import UIKit
 import SofaAcademic
 
 class ViewController: UIViewController, BaseViewProtocol, HeaderViewDelegate {
-    private let dataSource = Homework3DataSource()
     private let menu = MenuView()
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let header = HeaderView()
+    private var selectedSportName: String = "Football"
 
     var groupedEvents: [(league: League?, events: [Event])] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetchEvents(sport: selectedSportName.lowercased())
+        
+        menu.onSportSelected = { selectedSportName in
+            var sportName = selectedSportName
+            if sportName == "Am. Football" {
+                sportName = "Am-football"
+                self.selectedSportName = "Am. Football"
+            } else {
+                self.selectedSportName = sportName
+            }
+            self.fetchEvents(sport: sportName.lowercased())
+        }
 
         header.delegate = self
 
         addViews()
         styleViews()
         setupConstraints()
-
-        fetchData()
     }
 
+    private func fetchEvents(sport:String) {
+        APIClient.fetchEvents(forSport: sport) { result in
+            DispatchQueue.main.async {
+                switch result {
+                    case .success(let events):
+                        self.groupedEvents = Dictionary(grouping: events, by: { $0.league.id }).compactMap { (_, events) in
+                            guard let league = events.first?.league else { return nil }
+                            return (league, events)
+                        }
+                        self.tableView.reloadData()
+                    case .failure(let error):
+                        print("API error: \(error)")
+                }
+            }
+        }
+    }
+    
     func addViews() {
         view.addSubview(header)
         view.addSubview(menu)
@@ -56,16 +84,6 @@ class ViewController: UIViewController, BaseViewProtocol, HeaderViewDelegate {
             $0.top.equalTo(menu.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
-    }
-
-    private func fetchData() {
-        let allEvents = dataSource.events()
-        groupedEvents = Dictionary(grouping: allEvents, by: { $0.league?.id ?? -1 })
-            .compactMap { (_, events) in
-                guard let league = events.first?.league else { return nil }
-                return (league, events)
-            }
-        tableView.reloadData()
     }
 
     // MARK: - HeaderViewDelegate
@@ -123,7 +141,7 @@ extension ViewController: UITableViewDelegate {
         let leagueViewModel = LeagueViewModel(league: league)
         let eventViewModel = EventViewModel(event: event)
 
-        let detailsVC = EventDetailsViewController(event: eventViewModel, league: leagueViewModel)
+        let detailsVC = EventDetailsViewController(event: eventViewModel, league: leagueViewModel, sportName: selectedSportName)
         navigationController?.pushViewController(detailsVC, animated: true)
     }
 }

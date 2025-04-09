@@ -5,9 +5,10 @@ class EventDetailView: BaseView {
 
     private let event: EventViewModel
     private let league: LeagueViewModel
+    
+    var sportName: String
 
     private let headerContainerView = UIView()
-    
     private let backButton = UIImageView()
     private let leagueLogo = UIImageView()
     private let detailLabel = UILabel()
@@ -22,9 +23,10 @@ class EventDetailView: BaseView {
     private let dividerLabel = UILabel()
     private let statusLabel = UILabel()
 
-    init(event: EventViewModel, league: LeagueViewModel) {
+    init(event: EventViewModel, league: LeagueViewModel, sportName: String) {
         self.event = event
         self.league = league
+        self.sportName = sportName
         super.init()
     }
 
@@ -180,20 +182,20 @@ class EventDetailView: BaseView {
             awayTeamImage.setImageURL(awayURL)
         }
         
-        detailLabel.text = "Football, \(league.countryName), \(league.leagueName), Round 15"
+        detailLabel.text = "\(sportName), \(league.countryName), \(league.leagueName), Round 15"
         homeTeamName.text = event.homeTeamName
         awayTeamName.text = event.awayTeamName
         
         switch event.matchStatus {
-            case .notStarted:
+            case "NOT_STARTED":
                 dateLabel.text = Self.formatDate(timestamp: event.startTimestamp)
                 timeLabel.text = event.formattedTime
-            case .inProgress:
+            case "IN_PROGRESS":
                 homeScoreLabel.text = event.homeScoreText
                 dividerLabel.text = "-"
                 awayScoreLabel.text = event.awayScoreText
                 statusLabel.text = event.matchMinute.map { "\($0)'" } ?? ""
-            case .finished:
+            case "FINISHED":
                 homeScoreLabel.text = event.homeScoreText
                 dividerLabel.text = "-"
                 awayScoreLabel.text = event.awayScoreText
@@ -208,10 +210,12 @@ class EventDetailView: BaseView {
                 awayScoreLabel.textColor = .customBlack
                 dividerLabel.textColor = .customBlack
                 statusLabel.textColor = .customBlack
-            case .halftime:
+            case "HALF_TIME":
                 dateLabel.text = "HT \(event.homeScoreText) : \(event.awayScoreText)"
                 detailLabel.textColor = .customRed
                 detailLabel.alpha = 1.0
+        default:
+            print("NE!")
         }
     }
 
