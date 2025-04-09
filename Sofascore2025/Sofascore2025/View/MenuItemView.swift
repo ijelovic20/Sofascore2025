@@ -12,7 +12,7 @@ import Combine
 
 final class MenuItemView: BaseView {
     private let imageView = UIImageView()
-    private let titleLabel = UILabel()
+    let titleLabel = UILabel()
     
     private let tapSubject = PassthroughSubject<Void, Never>()
     
