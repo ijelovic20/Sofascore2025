@@ -28,29 +28,25 @@ class HeaderView: BaseView {
         settingsImageView.isUserInteractionEnabled = true
         settingsImageView.addGestureRecognizer(tapGesture)
     }
-
-    @objc private func didTapSettingsIcon() {
-        delegate?.didTapSettings()
-    }
     
     override func styleViews() {
         backgroundColor = .customBlue
         
         logoImageView.image = UIImage(named: "sofascore_lockup")
-        tropheyImageView.image = UIImage(named: "Icon 2")
-        settingsImageView.image = UIImage(named: "Icon 1")
+        tropheyImageView.image = UIImage(named: "trophy_icon")
+        settingsImageView.image = UIImage(named: "setting_icon")
     }
 
     override func setupConstraints() {
         logoImageView.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(16)
-            $0.top.equalToSuperview().offset(14)
+            $0.top.equalToSuperview().inset(14)
             $0.width.equalTo(132)
             $0.height.equalTo(20)
         }
 
         settingsContainerView.snp.makeConstraints {
-            $0.trailing.equalToSuperview().offset(-4)
+            $0.trailing.equalToSuperview().inset(4)
             $0.centerY.equalTo(logoImageView)
             $0.size.equalTo(48)
         }
@@ -69,5 +65,9 @@ class HeaderView: BaseView {
             $0.center.equalToSuperview()
             $0.size.equalTo(24)
         }
+    }
+    
+    @objc private func didTapSettingsIcon() {
+        delegate?.didTapSettings()
     }
 }

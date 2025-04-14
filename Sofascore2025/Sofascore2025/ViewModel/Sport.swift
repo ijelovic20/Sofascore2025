@@ -22,4 +22,15 @@ enum Sport: String, CaseIterable {
             return "ic_sport_notif_american_Football"
         }
     }
+    
+    var apiSlug: String {
+        switch self {
+        case .football:
+            return "football"
+        case .basketball:
+            return "basketball"
+        case .americanFootball:
+            return "am-football"
+        }
+    }
 }

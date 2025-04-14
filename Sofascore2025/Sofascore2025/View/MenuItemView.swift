@@ -1,10 +1,3 @@
-//
-//  MenuItemView.swift
-//  Sofascore2025
-//
-//  Created by Ivona Jelovic on 21.03.2025..
-//
-
 import UIKit
 import SnapKit
 import SofaAcademic
@@ -12,7 +5,7 @@ import Combine
 
 final class MenuItemView: BaseView {
     private let imageView = UIImageView()
-    let titleLabel = UILabel()
+    private let titleLabel = UILabel()
     
     private let tapSubject = PassthroughSubject<Void, Never>()
     

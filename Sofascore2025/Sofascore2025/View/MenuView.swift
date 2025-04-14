@@ -10,7 +10,7 @@ class MenuView: BaseView {
     
     private var cancellables: Set<AnyCancellable> = []
     
-    var onSportSelected: ((String) -> Void)?
+    var onSportSelected: ((Sport) -> Void)?
 
     override func addViews() {
         menuStack.distribution = .fillEqually
@@ -20,16 +20,17 @@ class MenuView: BaseView {
             let item = MenuItemView()
                 .setTitle(sport.rawValue)
                 .setImage(sport.iconName)
-            
+
             item.tapPublisher
                 .sink { [weak self] in
-                    self?.menuItemTapped(item)
+                    self?.menuItemTapped(item, sport: sport)
             }
             .store(in: &cancellables)
             
             menuStack.addArrangedSubview(item)
             menuItems.append(item)
         }
+
         selectorView.backgroundColor = .white
         menuStack.addSubview(selectorView)
         
@@ -64,11 +65,10 @@ class MenuView: BaseView {
         }
     }
 
-    private func menuItemTapped(_ item: MenuItemView) {
+    private func menuItemTapped(_ item: MenuItemView, sport: Sport) {
         guard let index = menuItems.firstIndex(of: item) else { return }
         layoutSelector(index: index)
         
-        let sportName = menuItems[index].titleLabel.text ?? ""
-        onSportSelected?(sportName)
+        onSportSelected?(sport)
     }
 }

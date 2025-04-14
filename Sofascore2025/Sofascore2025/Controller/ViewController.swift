@@ -1,30 +1,24 @@
 import UIKit
 import SofaAcademic
 
-class ViewController: UIViewController, BaseViewProtocol, HeaderViewDelegate {
+class ViewController: UIViewController, BaseViewProtocol {
     private let menu = MenuView()
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let header = HeaderView()
-    private var selectedSportName: String = "Football"
+    private var selectedSportName: Sport = .football
 
     var groupedEvents: [(league: League?, events: [Event])] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchEvents(sport: selectedSportName.lowercased())
+        fetchEvents(sport: selectedSportName.apiSlug)
         
         menu.onSportSelected = { selectedSportName in
-            var sportName = selectedSportName
-            if sportName == "Am. Football" {
-                sportName = "Am-football"
-                self.selectedSportName = "Am. Football"
-            } else {
-                self.selectedSportName = sportName
-            }
-            self.fetchEvents(sport: sportName.lowercased())
+            guard let sport = Sport(rawValue: selectedSportName.rawValue) else { return }
+            self.selectedSportName = sport
+            self.fetchEvents(sport: sport.apiSlug)
         }
-
         header.delegate = self
 
         addViews()
@@ -32,19 +26,19 @@ class ViewController: UIViewController, BaseViewProtocol, HeaderViewDelegate {
         setupConstraints()
     }
 
-    private func fetchEvents(sport:String) {
-        APIClient.fetchEvents(forSport: sport) { result in
-            DispatchQueue.main.async {
-                switch result {
-                    case .success(let events):
-                        self.groupedEvents = Dictionary(grouping: events, by: { $0.league.id }).compactMap { (_, events) in
-                            guard let league = events.first?.league else { return nil }
-                            return (league, events)
-                        }
-                        self.tableView.reloadData()
-                    case .failure(let error):
-                        print("API error: \(error)")
+    private func fetchEvents(sport: String) {
+        Task {
+            do {
+                let events = try await APIClient.fetchEvents(forSport: sport)
+                self.groupedEvents = Dictionary(grouping: events, by: { $0.league.id }).compactMap { (_, events) in
+                    guard let league = events.first?.league else { return nil }
+                    return (league, events)
                 }
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            } catch {
+                print("API error: \(error)")
             }
         }
     }
@@ -84,13 +78,6 @@ class ViewController: UIViewController, BaseViewProtocol, HeaderViewDelegate {
             $0.top.equalTo(menu.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
-    }
-
-    // MARK: - HeaderViewDelegate
-    func didTapSettings() {
-        let settingsVC: SettingsViewController = .init()
-        settingsVC.modalPresentationStyle = .fullScreen
-        present(settingsVC, animated: true)
     }
 }
 
@@ -143,5 +130,14 @@ extension ViewController: UITableViewDelegate {
 
         let detailsVC = EventDetailsViewController(event: eventViewModel, league: leagueViewModel, sportName: selectedSportName)
         navigationController?.pushViewController(detailsVC, animated: true)
+    }
+}
+
+// MARK: - HeaderViewDelegate
+extension ViewController: HeaderViewDelegate {
+    func didTapSettings() {
+        let settingsVC: SettingsViewController = .init()
+        settingsVC.modalPresentationStyle = .fullScreen
+        present(settingsVC, animated: true)
     }
 }

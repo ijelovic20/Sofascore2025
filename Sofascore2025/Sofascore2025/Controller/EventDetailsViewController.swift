@@ -1,25 +1,34 @@
 import UIKit
 import SofaAcademic
+import Combine
 
 class EventDetailsViewController: UIViewController, BaseViewProtocol {
     private let event: EventViewModel
     private let league: LeagueViewModel
-    var sportName: String
+    var sportName: Sport
     
-    private lazy var eventDetailView: EventDetailView = {
-        let view = EventDetailView(event: event, league: league, sportName: sportName)
-        return view
-    }()
+    private let eventDetailView: EventDetailView  = .init()
     
-    init(event: EventViewModel, league: LeagueViewModel, sportName: String) {
+    private var cancellables = Set<AnyCancellable>()
+
+    override func loadView() {
+        let detailView = EventDetailView()
+        detailView.backButtonTappedPublisher
+            .sink { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
+            .store(in: &cancellables)
+
+        self.view = detailView
+    }
+    
+    init(event: EventViewModel, league: LeagueViewModel, sportName: Sport) {
         self.event = event
         self.league = league
         self.sportName = sportName
         super.init(nibName: nil, bundle: nil)
         
-        eventDetailView = EventDetailView(event: event, league: league, sportName: sportName)
-        
-        eventDetailView.configure(with: event, league: league)
+        eventDetailView.configure(with: event, league: league, sportName: sportName.rawValue)
         
         addViews()
         styleViews()
@@ -51,19 +60,6 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
     }
 
     @objc func backButtonTapped() {
-        if let navigationController = self.findNavigationController() {
-            navigationController.popViewController(animated: true)
-        }
-    }
-
-    private func findNavigationController() -> UINavigationController? {
-        var responder = self.next
-        while let nextResponder = responder {
-            if let navigationController = nextResponder as? UINavigationController {
-                return navigationController
-            }
-            responder = nextResponder.next
-        }
-        return nil
+        navigationController?.popViewController(animated: true)
     }
 }

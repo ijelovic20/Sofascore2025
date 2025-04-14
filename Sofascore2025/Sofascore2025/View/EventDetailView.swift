@@ -1,13 +1,10 @@
 import UIKit
 import SofaAcademic
+import Combine
 
 class EventDetailView: BaseView {
-
-    private let event: EventViewModel
-    private let league: LeagueViewModel
+    let backButtonTappedPublisher = PassthroughSubject<Void, Never>()
     
-    var sportName: String
-
     private let headerContainerView = UIView()
     private let backButton = UIImageView()
     private let leagueLogo = UIImageView()
@@ -22,14 +19,7 @@ class EventDetailView: BaseView {
     private let awayScoreLabel = UILabel()
     private let dividerLabel = UILabel()
     private let statusLabel = UILabel()
-
-    init(event: EventViewModel, league: LeagueViewModel, sportName: String) {
-        self.event = event
-        self.league = league
-        self.sportName = sportName
-        super.init()
-    }
-
+    
     override func addViews() {
         addSubview(headerContainerView)
         
@@ -70,6 +60,8 @@ class EventDetailView: BaseView {
         awayScoreLabel.textAlignment = .left
         dividerLabel.textAlignment = .center
         statusLabel.textAlignment = .center
+        homeTeamName.textAlignment = .center
+        awayTeamName.textAlignment = .center
         
         dateLabel.textColor = .customBlack
         timeLabel.textColor = .customBlack
@@ -82,6 +74,12 @@ class EventDetailView: BaseView {
         awayScoreLabel.font = .robotoBold32
         dividerLabel.font = .robotoBold32
         statusLabel.font = .robotoRegular12
+        
+        homeTeamName.numberOfLines = 0
+        homeTeamName.lineBreakMode = .byWordWrapping
+        
+        awayTeamName.numberOfLines = 0
+        awayTeamName.lineBreakMode = .byWordWrapping
     }
 
     override func setupConstraints() {
@@ -92,7 +90,7 @@ class EventDetailView: BaseView {
         }
         
         backButton.snp.makeConstraints {
-            $0.leading.equalToSuperview().offset(20)
+            $0.leading.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
             $0.size.equalTo(16)
         }
@@ -117,7 +115,8 @@ class EventDetailView: BaseView {
         homeTeamName.snp.makeConstraints{
             $0.top.equalTo(homeTeamImage.snp.bottom).offset(8)
             $0.centerX.equalTo(homeTeamImage)
-            $0.height.equalTo(32)
+            $0.width.equalTo(96)
+            $0.bottom.equalToSuperview().offset(-656)
         }
         
         dateLabel.snp.makeConstraints {
@@ -141,7 +140,8 @@ class EventDetailView: BaseView {
         awayTeamName.snp.makeConstraints{
             $0.top.equalTo(awayTeamImage.snp.bottom).offset(8)
             $0.centerX.equalTo(awayTeamImage)
-            $0.height.equalTo(32)
+            $0.width.equalTo(96)
+            $0.bottom.equalToSuperview().offset(-656)
         }
         
         dividerLabel.snp.makeConstraints {
@@ -169,7 +169,7 @@ class EventDetailView: BaseView {
         }
     }
     
-    func configure(with event: EventViewModel, league: LeagueViewModel) {
+    func configure(with event: EventViewModel, league: LeagueViewModel, sportName: String) {
         if let logoUrl = league.logoURL {
             leagueLogo.setImageURL(logoUrl)
         }
@@ -187,15 +187,15 @@ class EventDetailView: BaseView {
         awayTeamName.text = event.awayTeamName
         
         switch event.matchStatus {
-            case "NOT_STARTED":
+            case .notStarted:
                 dateLabel.text = Self.formatDate(timestamp: event.startTimestamp)
                 timeLabel.text = event.formattedTime
-            case "IN_PROGRESS":
+            case .inProgress:
                 homeScoreLabel.text = event.homeScoreText
                 dividerLabel.text = "-"
                 awayScoreLabel.text = event.awayScoreText
                 statusLabel.text = event.matchMinute.map { "\($0)'" } ?? ""
-            case "FINISHED":
+            case .finished:
                 homeScoreLabel.text = event.homeScoreText
                 dividerLabel.text = "-"
                 awayScoreLabel.text = event.awayScoreText
@@ -210,30 +210,15 @@ class EventDetailView: BaseView {
                 awayScoreLabel.textColor = .customBlack
                 dividerLabel.textColor = .customBlack
                 statusLabel.textColor = .customBlack
-            case "HALF_TIME":
+            case .halfTime:
                 dateLabel.text = "HT \(event.homeScoreText) : \(event.awayScoreText)"
                 detailLabel.textColor = .customRed
                 detailLabel.alpha = 1.0
-        default:
-            print("NE!")
         }
     }
 
     @objc func backButtonTapped() {
-        if let navigationController = self.findNavigationController() {
-            navigationController.popViewController(animated: true)
-        }
-    }
-
-    private func findNavigationController() -> UINavigationController? {
-        var responder = self.next
-        while let nextResponder = responder {
-            if let navigationController = nextResponder as? UINavigationController {
-                return navigationController
-            }
-            responder = nextResponder.next
-        }
-        return nil
+        backButtonTappedPublisher.send(())
     }
     
     private static func formatDate(timestamp: Int) -> String {

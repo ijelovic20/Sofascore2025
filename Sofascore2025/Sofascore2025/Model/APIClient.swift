@@ -1,35 +1,22 @@
 import Foundation
 
 class APIClient {
-    static func fetchEvents(forSport slug: String, completion: @escaping (Result<[Event], Error>) -> Void) {
+    static func fetchEvents(forSport slug: String) async throws -> [Event] {
         let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/events?sport=\(slug)"
         
         guard let url = URL(string: urlString) else {
             print("Error: Invalid URL string")
-            completion(.failure(NSError()))
-            return
+            throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
-
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-
-            guard let data = data else {
-                print("No data received.")
-                completion(.failure(NSError()))
-                return
-            }
-
-            do {
-                let events = try JSONDecoder().decode([Event].self, from: data)
-                completion(.success(events))
-            } catch {
-                print("Error decoding data: \(error.localizedDescription)")
-                completion(.failure(error))
-            }
+        
+        let (data, _) = try await URLSession.shared.data(from: url)
+        
+        do {
+            let events = try JSONDecoder().decode([Event].self, from: data)
+            return events
+        } catch {
+            print("Error decoding data: \(error.localizedDescription)")
+            throw error
         }
-        task.resume()
     }
 }
