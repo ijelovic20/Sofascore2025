@@ -5,19 +5,18 @@ class ViewController: UIViewController, BaseViewProtocol {
     private let menu = MenuView()
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let header = HeaderView()
-    private var selectedSportName: Sport = .football
+    private var selectedSport: Sport = .football
 
     var groupedEvents: [(league: League?, events: [Event])] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchEvents(sport: selectedSportName.apiSlug)
+        fetchEvents(sport: selectedSport.apiSlug)
         
-        menu.onSportSelected = { selectedSportName in
-            guard let sport = Sport(rawValue: selectedSportName.rawValue) else { return }
-            self.selectedSportName = sport
-            self.fetchEvents(sport: sport.apiSlug)
+        menu.onSportSelected = { selectedSport in
+            self.selectedSport = selectedSport
+            self.fetchEvents(sport: selectedSport.apiSlug)
         }
         header.delegate = self
 
@@ -128,7 +127,7 @@ extension ViewController: UITableViewDelegate {
         let leagueViewModel = LeagueViewModel(league: league)
         let eventViewModel = EventViewModel(event: event)
 
-        let detailsVC = EventDetailsViewController(event: eventViewModel, league: leagueViewModel, sportName: selectedSportName)
+        let detailsVC = EventDetailsViewController(event: eventViewModel, league: leagueViewModel, sportName: selectedSport)
         navigationController?.pushViewController(detailsVC, animated: true)
     }
 }

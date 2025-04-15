@@ -116,7 +116,6 @@ class EventDetailView: BaseView {
             $0.top.equalTo(homeTeamImage.snp.bottom).offset(8)
             $0.centerX.equalTo(homeTeamImage)
             $0.width.equalTo(96)
-            $0.bottom.equalToSuperview().offset(-656)
         }
         
         dateLabel.snp.makeConstraints {

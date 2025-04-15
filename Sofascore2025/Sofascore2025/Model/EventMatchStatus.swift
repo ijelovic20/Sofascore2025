@@ -1,6 +1,6 @@
 import Foundation
 
-enum EventMatch: String, Codable {
+enum EventMatchStatus: String, Codable {
     case notStarted = "NOT_STARTED"
     case inProgress = "IN_PROGRESS"
     case finished = "FINISHED"

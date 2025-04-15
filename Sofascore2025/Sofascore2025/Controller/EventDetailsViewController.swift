@@ -10,6 +10,17 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
     private let eventDetailView: EventDetailView  = .init()
     
     private var cancellables = Set<AnyCancellable>()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        eventDetailView.configure(with: event, league: league, sportName: sportName.rawValue)
+        
+        addViews()
+        styleViews()
+        setupConstraints()
+        setupGestureRecognizers()
+    }
 
     override func loadView() {
         let detailView = EventDetailView()
@@ -27,13 +38,6 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         self.league = league
         self.sportName = sportName
         super.init(nibName: nil, bundle: nil)
-        
-        eventDetailView.configure(with: event, league: league, sportName: sportName.rawValue)
-        
-        addViews()
-        styleViews()
-        setupConstraints()
-        setupGestureRecognizers()
     }
 
     required init?(coder: NSCoder) {

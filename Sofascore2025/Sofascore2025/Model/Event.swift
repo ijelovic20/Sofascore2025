@@ -5,7 +5,7 @@ struct Event: Codable {
     let homeTeam: Team
     let awayTeam: Team
     let startTimestamp: Int
-    let status: String
+    let status: EventMatchStatus
     let league: League
     let homeScore: Int?
     let awayScore: Int?
