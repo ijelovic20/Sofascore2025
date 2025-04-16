@@ -16,21 +16,13 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         
         eventDetailView.configure(with: event, league: league, sportName: sportName.rawValue)
         
+        eventDetailView.backButtonTappedPublisher.sink { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        }.store(in: &cancellables)
+        
         addViews()
         styleViews()
         setupConstraints()
-        setupGestureRecognizers()
-    }
-
-    override func loadView() {
-        let detailView = EventDetailView()
-        detailView.backButtonTappedPublisher
-            .sink { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
-            .store(in: &cancellables)
-
-        self.view = detailView
     }
     
     init(event: EventViewModel, league: LeagueViewModel, sportName: Sport) {
