@@ -1,10 +1,3 @@
-//
-//  EventViewModel.swift
-//  Sofascore2025
-//
-//  Created by Ivona Jelovic on 16.03.2025..
-//
-
 import Foundation
 import UIKit
 import SofaAcademic
@@ -15,7 +8,7 @@ struct EventViewModel {
     var homeScoreText: String
     var awayScoreText: String
     let formattedTime: String
-    let matchStatus: EventStatus
+    let matchStatus: EventMatchStatus
     let homeTeamLogoURL: URL?
     let awayTeamLogoURL: URL?
     let matchMinute: Int?
@@ -32,9 +25,9 @@ struct EventViewModel {
         self.homeScoreText = String(event.homeScore ?? 0)
         self.awayScoreText = String(event.awayScore ?? 0)
         self.formattedTime = Self.formatTime(timestamp: event.startTimestamp)
-        self.matchStatus = event.status
-        self.homeTeamLogoURL = URL(string: event.homeTeam.logoUrl ?? "")
-        self.awayTeamLogoURL = URL(string: event.awayTeam.logoUrl ?? "")
+        self.matchStatus = EventMatchStatus(rawValue: event.status.rawValue) ?? .notStarted
+        self.homeTeamLogoURL = URL(string: event.homeTeam.logoUrl)
+        self.awayTeamLogoURL = URL(string: event.awayTeam.logoUrl)
         self.startTimestamp = event.startTimestamp
 
         var homeAlpha: CGFloat = 1.0
@@ -45,33 +38,41 @@ struct EventViewModel {
         var statusAlpha: CGFloat = 0.4
 
         switch event.status {
-            case .inProgress:
+        case EventMatchStatus(rawValue: "IN_PROGRESS") ?? nil:
                 let currentTime = Int(Date().timeIntervalSince1970)
                 matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
                 statusString = "\(matchMinute ?? 0)′"
                 statusColor = .customRed
                 statusAlpha = 1.0
-            case .finished:
+        case EventMatchStatus(rawValue: "FINISHED") ?? nil:
                 statusString = "FT"
                 statusAlpha = 0.4
-                if let homeScore = event.homeScore, let awayScore = event.awayScore {
-                    if homeScore > awayScore {
-                        homeAlpha = 1.0
-                        awayAlpha = 0.4
-                    } else if awayScore > homeScore {
-                        homeAlpha = 0.4
-                        awayAlpha = 1.0
-                    }
+            if let homeScore = event.homeScore, let awayScore = event.awayScore {
+                if homeScore > awayScore {
+                    homeAlpha = 1.0
+                    awayAlpha = 0.4
+                } else if awayScore > homeScore {
+                    homeAlpha = 0.4
+                    awayAlpha = 1.0
+                } else {
+                    homeAlpha = 0.4
+                    awayAlpha = 0.4
                 }
-            case .notStarted:
+            } else {
+                homeAlpha = 0.4
+                awayAlpha = 0.4
+            }
+        case EventMatchStatus(rawValue: "NOT_STARTED") ?? nil:
                 statusString = "-"
                 statusAlpha = 0.4
                 self.homeScoreText = ""
                 self.awayScoreText = ""
-            case .halftime:
+        case EventMatchStatus(rawValue: "HALF_TIME") ?? nil:
                 statusString = "HT"
                 statusColor = .customRed
                 statusAlpha = 1.0
+            default:
+                statusString = "-"
         }
         self.homeAlpha = homeAlpha
         self.awayAlpha = awayAlpha

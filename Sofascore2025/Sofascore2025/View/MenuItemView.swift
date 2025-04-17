@@ -1,10 +1,3 @@
-//
-//  MenuItemView.swift
-//  Sofascore2025
-//
-//  Created by Ivona Jelovic on 21.03.2025..
-//
-
 import UIKit
 import SnapKit
 import SofaAcademic
