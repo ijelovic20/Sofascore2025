@@ -42,11 +42,13 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
 
     func styleViews() {
         eventDetailView.backgroundColor = .white
+        view.backgroundColor = .white
     }
 
     func setupConstraints() {
         eventDetailView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.lessThanOrEqualToSuperview()
         }
     }
 

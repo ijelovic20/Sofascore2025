@@ -19,7 +19,6 @@ class EventDetailView: BaseView {
     private let awayScoreLabel = UILabel()
     private let dividerLabel = UILabel()
     private let statusLabel = UILabel()
-    private let lastContainerView = UIView()
     
     override func addViews() {
         addSubview(headerContainerView)
@@ -38,7 +37,6 @@ class EventDetailView: BaseView {
         addSubview(awayScoreLabel)
         addSubview(dividerLabel)
         addSubview(statusLabel)
-        addSubview(lastContainerView)
     }
 
     override func styleViews() {
@@ -117,6 +115,7 @@ class EventDetailView: BaseView {
         homeTeamName.snp.makeConstraints{
             $0.top.equalTo(homeTeamImage.snp.bottom).offset(8)
             $0.centerX.equalTo(homeTeamImage)
+            $0.bottom.equalToSuperview().inset(16)
             $0.width.equalTo(96)
         }
         
@@ -166,12 +165,6 @@ class EventDetailView: BaseView {
             $0.leading.equalTo(dividerLabel.snp.trailing).offset(4)
             $0.centerY.equalTo(dividerLabel)
             $0.width.equalTo(56)
-        }
-        
-        lastContainerView.snp.makeConstraints {
-            $0.top.equalTo(awayTeamName.snp.bottom)
-            $0.bottom.equalToSuperview()
-            $0.leading.trailing.equalToSuperview()
         }
     }
     
