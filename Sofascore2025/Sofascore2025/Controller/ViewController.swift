@@ -6,12 +6,12 @@ class ViewController: UIViewController, BaseViewProtocol {
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let header = HeaderView()
     private var selectedSport: Sport = .football
+    var name = String()
 
     var groupedEvents: [(league: League?, events: [Event])] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         fetchEvents(sport: selectedSport.apiSlug)
         
         menu.onSportSelected = { selectedSport in
@@ -135,7 +135,7 @@ extension ViewController: UITableViewDelegate {
 // MARK: - HeaderViewDelegate
 extension ViewController: HeaderViewDelegate {
     func didTapSettings() {
-        let settingsVC: SettingsViewController = .init()
+        let settingsVC: SettingsViewController = .init(name: name)
         settingsVC.modalPresentationStyle = .fullScreen
         present(settingsVC, animated: true)
     }

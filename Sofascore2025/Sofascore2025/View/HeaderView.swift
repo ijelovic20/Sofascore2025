@@ -35,6 +35,8 @@ class HeaderView: BaseView {
         logoImageView.image = UIImage(named: "sofascore_lockup")
         tropheyImageView.image = UIImage(named: "trophy_icon")
         settingsImageView.image = UIImage(named: "setting_icon")
+        
+        logoImageView.tintColor = .white
     }
 
     override func setupConstraints() {
