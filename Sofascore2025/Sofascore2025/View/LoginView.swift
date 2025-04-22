@@ -27,9 +27,7 @@ class LoginView: BaseView {
         usernameTextField.layer.cornerRadius = 2
         usernameTextField.borderStyle = .none
         usernameTextField.contentVerticalAlignment = .center
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 8, height: 0))
-        usernameTextField.leftView = paddingView
-        usernameTextField.leftViewMode = .always
+        usernameTextField.textColor = .customBlack
         
         passwordTextField.placeholder = "Password"
         passwordTextField.isSecureTextEntry = true
@@ -40,7 +38,15 @@ class LoginView: BaseView {
         passwordTextField.layer.cornerRadius = 2
         passwordTextField.borderStyle = .none
         passwordTextField.contentVerticalAlignment = .center
-        
+        passwordTextField.textColor = .customBlack
+    
+        [usernameTextField, passwordTextField].forEach { textField in
+            textField.borderStyle = .roundedRect
+            
+            let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 4, height: 0))
+            textField.leftView = paddingView
+            textField.leftViewMode = .always
+        }
         loginButton.setTitle("Login", for: .normal)
         loginButton.backgroundColor = .customBlue
         loginButton.titleLabel!.textAlignment = .center

@@ -12,7 +12,7 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         setupConstraints()
 
         settingsView.configure(with: name)
-        settingsView.dismissButton.addTarget(self, action: #selector(dismissSettings), for: .touchUpInside)
+        settingsView.dismissButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
     }
     
     init(name: String){
@@ -34,9 +34,12 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         }
     }
 
-    @objc func dismissSettings() {
+    @objc func logout() {
         UserDefaults.standard.removeObject(forKey: "token")
         UserDefaults.standard.removeObject(forKey: "name")
+        
+        DBManager.shared.deleteAllData()
+        print(DBManager.shared.leagueCount())
 
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = scene.windows.first {

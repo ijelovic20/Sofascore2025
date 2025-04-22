@@ -29,10 +29,22 @@ class ViewController: UIViewController, BaseViewProtocol {
         Task {
             do {
                 let events = try await APIClient.fetchEvents(forSport: sport)
+
                 self.groupedEvents = Dictionary(grouping: events, by: { $0.league.id }).compactMap { (_, events) in
-                    guard let league = events.first?.league else { return nil }
+                    let league = events.first?.league
                     return (league, events)
                 }
+
+                do {
+                    let leagues = groupedEvents.compactMap { $0.league }
+                    let allEvents = groupedEvents.flatMap { $0.events }
+
+                    try DBManager.shared.saveLeagues(leagues)
+                    try DBManager.shared.saveEvents(allEvents)
+                } catch {
+                    print("Greska \(error)")
+                }
+
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }

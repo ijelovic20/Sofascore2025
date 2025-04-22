@@ -8,6 +8,8 @@ class LoginViewController: UIViewController, BaseViewProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        
         loginView.loginButton.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
             
         styleViews()
