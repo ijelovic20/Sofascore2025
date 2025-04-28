@@ -1,18 +1,23 @@
 import GRDB
 import Foundation
 
-final class DBManager {
-    static let shared = DBManager()
+final class DatabaseManager {
+    static let shared = DatabaseManager()
     
-    lazy var dbQueue: DatabaseQueue = {
-        let dbPath = try! FileManager.default.url(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        ).appendingPathComponent("db-academy.sqlite").path
-        
-        return try! DatabaseQueue(path: dbPath)
+    lazy var dbQueue: DatabaseQueue? = {
+        do {
+            let dbPath = try FileManager.default.url(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true
+            ).appendingPathComponent("db-academy.sqlite").path
+                
+            return try DatabaseQueue(path: dbPath)
+        } catch {
+            print("Greška pri inicijalizaciji baze podataka: \(error)")
+            return nil
+        }
     }()
     
     private init() {
@@ -21,7 +26,7 @@ final class DBManager {
     
     private func createTables() {
         do {
-            try dbQueue.write { db in
+            try dbQueue?.write { db in
                 try db.create(table: "leagues", ifNotExists: true) { t in
                     t.column("id", .integer).primaryKey()
                     t.column("name", .text)
@@ -48,10 +53,7 @@ final class DBManager {
     }
     
     func saveLeague(_ league: League, in db: Database) throws {
-        try db.execute(sql: """
-            INSERT OR REPLACE INTO leagues (id, name, countryName, logoUrl)
-            VALUES (?, ?, ?, ?)
-        """, arguments: [
+        try db.execute(sql: SQLQueries.insertLeague, arguments: [
             league.id,
             league.name,
             league.country.name,
@@ -60,7 +62,7 @@ final class DBManager {
     }
 
     func saveLeagues(_ leagues: [League]) throws {
-        try dbQueue.write { db in
+        try dbQueue?.write { db in
             for league in leagues {
                 try saveLeague(league, in: db)
             }
@@ -68,10 +70,7 @@ final class DBManager {
     }
 
     func saveEvent(_ event: Event, in db: Database) throws {
-        try db.execute(sql: """
-            INSERT OR REPLACE INTO events (id, homeTeam, awayTeam, startTimestamp, status, leagueId, homeScore, awayScore)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, arguments: [
+        try db.execute(sql: SQLQueries.insertEvent, arguments: [
             event.id,
             event.homeTeam.id,
             event.awayTeam.id,
@@ -84,17 +83,22 @@ final class DBManager {
     }
 
     func saveEvents(_ events: [Event]) throws {
-        try dbQueue.write { db in
+        try dbQueue?.write { db in
             for event in events {
                 try saveEvent(event, in: db)
             }
         }
     }
-    
+        
     func leagueCount() -> Int {
+        guard let dbQueue = dbQueue else {
+            print("dbQueue nije inicijaliziran")
+            return 0
+        }
+        
         do {
             let count = try dbQueue.read { db in
-                try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM leagues") ?? 0
+                try Int.fetchOne(db, sql: SQLQueries.countLeagues) ?? 0
             }
             return count
         } catch {
@@ -102,11 +106,16 @@ final class DBManager {
             return 0
         }
     }
-    
+        
     func eventCount() -> Int {
+        guard let dbQueue = dbQueue else {
+            print("dbQueue nije inicijaliziran")
+            return 0
+        }
+            
         do {
             let count = try dbQueue.read { db in
-                try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM events") ?? 0
+                try Int.fetchOne(db, sql: SQLQueries.countEvents) ?? 0
             }
             return count
         } catch {
@@ -117,9 +126,9 @@ final class DBManager {
     
     func deleteAllData() {
         do {
-            try dbQueue.write { db in
-                try db.execute(sql: "DELETE FROM events")
-                try db.execute(sql: "DELETE FROM leagues")
+            try dbQueue?.write { db in
+                try db.execute(sql: SQLQueries.deleteAllEvents)
+                try db.execute(sql: SQLQueries.deleteAllLeagues)
             }
         } catch {
             print("greška \(error)")

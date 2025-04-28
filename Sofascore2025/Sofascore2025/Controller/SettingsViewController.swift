@@ -2,7 +2,6 @@ import UIKit
 import SofaAcademic
 
 class SettingsViewController: UIViewController, BaseViewProtocol {
-    private let name: String
     private let settingsView = SettingsView()
 
     override func viewDidLoad() {
@@ -10,13 +9,15 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
         styleViews()
         addViews()
         setupConstraints()
+        
+        settingsView.configure()
 
-        settingsView.configure(with: name)
-        settingsView.dismissButton.addTarget(self, action: #selector(logout), for: .touchUpInside)
+        settingsView.onDismissTap = { [weak self] in
+            self?.logout()
+        }
     }
     
-    init(name: String){
-        self.name = name
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -35,19 +36,15 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
     }
 
     @objc func logout() {
-        UserDefaults.standard.removeObject(forKey: "token")
-        UserDefaults.standard.removeObject(forKey: "name")
+        LoginPersistenceManager.clearData()
         
-        DBManager.shared.deleteAllData()
-        print(DBManager.shared.leagueCount())
+        DatabaseManager.shared.deleteAllData()
 
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = scene.windows.first {
             
-            let loginVC = LoginViewController()
-            let navController = UINavigationController(rootViewController: loginVC)
-            
-            window.rootViewController = navController
+            let rootVC = RootViewController()
+            window.rootViewController = rootVC
             window.makeKeyAndVisible()
         }
     }

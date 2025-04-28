@@ -3,14 +3,15 @@ import SofaAcademic
 
 class LoginViewController: UIViewController, BaseViewProtocol {
     private let loginView = LoginView()
-    private let userDefaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationController?.setNavigationBarHidden(true, animated: false)
         
-        loginView.loginButton.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
+        loginView.onLoginTap = { [weak self] in
+            self?.handleLogin()
+        }
             
         styleViews()
         addViews()
@@ -32,28 +33,33 @@ class LoginViewController: UIViewController, BaseViewProtocol {
     }
     
     @objc private func handleLogin() {
-        let username = loginView.usernameTextField.text ?? ""
-        let password = loginView.passwordTextField.text ?? ""
+        let username = loginView.username
+        let password = loginView.password
+        
+        loginView.showLoader()
 
         Task {
             do {
                 let response = try await APIClient.login(username: username, password: password)
-
-                userDefaults.set(response.token, forKey: "token")
-                userDefaults.set(response.name, forKey: "name")
+                
+                LoginPersistenceManager.saveData(token: response.token, name: response.name)
 
                 let mainVC = ViewController()
-                mainVC.name = response.name
                 let navController = UINavigationController(rootViewController: mainVC)
                 navController.setNavigationBarHidden(true, animated: false)
+                
+                loginView.hideLoader()
 
                 if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let window = scene.windows.first {
-                    window.rootViewController = navController
-                    window.makeKeyAndVisible()
+                   let window = scene.windows.first,
+                   let rootVC = window.rootViewController as? RootViewController {
+                        rootVC.showMainApp()
                 }
             } catch {
+                loginView.showLabel()
                 print("Login failed: \(error.localizedDescription)")
+                
+                self.loginView.hideLoader()
             }
         }
     }

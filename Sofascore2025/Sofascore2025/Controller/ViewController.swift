@@ -6,7 +6,6 @@ class ViewController: UIViewController, BaseViewProtocol {
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let header = HeaderView()
     private var selectedSport: Sport = .football
-    var name = String()
 
     var groupedEvents: [(league: League?, events: [Event])] = []
 
@@ -39,8 +38,8 @@ class ViewController: UIViewController, BaseViewProtocol {
                     let leagues = groupedEvents.compactMap { $0.league }
                     let allEvents = groupedEvents.flatMap { $0.events }
 
-                    try DBManager.shared.saveLeagues(leagues)
-                    try DBManager.shared.saveEvents(allEvents)
+                    try DatabaseManager.shared.saveLeagues(leagues)
+                    try DatabaseManager.shared.saveEvents(allEvents)
                 } catch {
                     print("Greska \(error)")
                 }
@@ -147,7 +146,7 @@ extension ViewController: UITableViewDelegate {
 // MARK: - HeaderViewDelegate
 extension ViewController: HeaderViewDelegate {
     func didTapSettings() {
-        let settingsVC: SettingsViewController = .init(name: name)
+        let settingsVC = SettingsViewController()
         settingsVC.modalPresentationStyle = .fullScreen
         present(settingsVC, animated: true)
     }
