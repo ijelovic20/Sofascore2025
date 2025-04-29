@@ -11,17 +11,30 @@ class ViewController: UIViewController, BaseViewProtocol {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchEvents(sport: selectedSport.apiSlug)
         
         menu.onSportSelected = { selectedSport in
             self.selectedSport = selectedSport
             self.fetchEvents(sport: selectedSport.apiSlug)
         }
         header.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
-        addViews()
-        styleViews()
-        setupConstraints()
+        if shouldShowLogin() {
+            let loginVC = LoginViewController()
+            navigationController?.pushViewController(loginVC, animated: false)
+        } else {
+            addViews()
+            styleViews()
+            setupConstraints()
+            fetchEvents(sport: selectedSport.apiSlug)
+        }
+    }
+    
+    private func shouldShowLogin() -> Bool {
+        return LoginPersistenceManager.getData().token == nil
     }
 
     private func fetchEvents(sport: String) {

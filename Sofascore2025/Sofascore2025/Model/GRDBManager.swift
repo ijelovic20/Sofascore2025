@@ -53,7 +53,7 @@ final class DatabaseManager {
     }
     
     func saveLeague(_ league: League, in db: Database) throws {
-        try db.execute(sql: SQLQueries.insertLeague, arguments: [
+        try db.execute(sql: SQLQueries.insertLeague.rawValue, arguments: [
             league.id,
             league.name,
             league.country.name,
@@ -70,7 +70,7 @@ final class DatabaseManager {
     }
 
     func saveEvent(_ event: Event, in db: Database) throws {
-        try db.execute(sql: SQLQueries.insertEvent, arguments: [
+        try db.execute(sql: SQLQueries.insertEvent.rawValue, arguments: [
             event.id,
             event.homeTeam.id,
             event.awayTeam.id,
@@ -98,7 +98,7 @@ final class DatabaseManager {
         
         do {
             let count = try dbQueue.read { db in
-                try Int.fetchOne(db, sql: SQLQueries.countLeagues) ?? 0
+                try Int.fetchOne(db, sql: SQLQueries.countLeagues.rawValue) ?? 0
             }
             return count
         } catch {
@@ -115,7 +115,7 @@ final class DatabaseManager {
             
         do {
             let count = try dbQueue.read { db in
-                try Int.fetchOne(db, sql: SQLQueries.countEvents) ?? 0
+                try Int.fetchOne(db, sql: SQLQueries.countEvents.rawValue) ?? 0
             }
             return count
         } catch {
@@ -127,8 +127,8 @@ final class DatabaseManager {
     func deleteAllData() {
         do {
             try dbQueue?.write { db in
-                try db.execute(sql: SQLQueries.deleteAllEvents)
-                try db.execute(sql: SQLQueries.deleteAllLeagues)
+                try db.execute(sql: SQLQueries.deleteAllEvents.rawValue)
+                try db.execute(sql: SQLQueries.deleteAllLeagues.rawValue)
             }
         } catch {
             print("greška \(error)")

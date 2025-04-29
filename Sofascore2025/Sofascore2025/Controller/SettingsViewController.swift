@@ -34,18 +34,12 @@ class SettingsViewController: UIViewController, BaseViewProtocol {
             $0.edges.equalToSuperview()
         }
     }
-
+    
     @objc func logout() {
         LoginPersistenceManager.clearData()
-        
         DatabaseManager.shared.deleteAllData()
+        print("outtt ", LoginPersistenceManager.getData())
 
-        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = scene.windows.first {
-            
-            let rootVC = RootViewController()
-            window.rootViewController = rootVC
-            window.makeKeyAndVisible()
-        }
+        dismiss(animated: true)
     }
 }
