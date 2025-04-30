@@ -41,10 +41,7 @@ class LoginViewController: UIViewController, BaseViewProtocol {
                                 
                 LoginPersistenceManager.saveData(token: response.token, name: response.name)
                                 
-                self.dismiss(animated: true, completion: {
-                    let mainVC = ViewController()
-                    self.navigationController?.pushViewController(mainVC, animated: true)
-                })
+                self.navigationController?.popViewController(animated: true)
             } catch {
                 loginView.showLabel()
                 print("Login failed: \(error.localizedDescription)")

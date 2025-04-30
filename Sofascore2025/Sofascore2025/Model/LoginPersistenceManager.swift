@@ -20,5 +20,6 @@ enum LoginPersistenceManager {
     static func clearData() {
         UserDefaults.standard.removeObject(forKey: Keys.token)
         UserDefaults.standard.removeObject(forKey: Keys.name)
+        UserDefaults.standard.synchronize()
     }
 }
