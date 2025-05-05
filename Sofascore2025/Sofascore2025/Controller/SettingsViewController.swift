@@ -2,47 +2,44 @@ import UIKit
 import SofaAcademic
 
 class SettingsViewController: UIViewController, BaseViewProtocol {
-    private let titleLabel: UILabel = .init()
-    private let dismissButton: UIButton = .init()
-        
+    private let settingsView = SettingsView()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-            
         styleViews()
         addViews()
         setupConstraints()
-    }
         
+        settingsView.configure()
+
+        settingsView.onDismissTap = { [weak self] in
+            self?.logout()
+        }
+    }
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     func addViews() {
-        view.addSubview(titleLabel)
-        view.addSubview(dismissButton)
+        view.addSubview(settingsView)
     }
-        
-    func styleViews() {
-        view.backgroundColor = .white
-        titleLabel.text = "Settings"
-        titleLabel.font = .robotoBold14
-        titleLabel.textAlignment = .center
-            
-        dismissButton.setTitle("Dismiss", for: .normal)
-        dismissButton.addTarget(self, action: #selector(dismissSettings), for: .touchUpInside)
-        dismissButton.backgroundColor = .customBlue
-    }
-        
+
     func setupConstraints() {
-        titleLabel.snp.makeConstraints{
-            $0.center.equalToSuperview()
-        }
-            
-        dismissButton.snp.makeConstraints{
-            $0.top.equalTo(titleLabel.snp.bottom).offset(16)
-            $0.centerX.equalToSuperview()
-            $0.width.equalTo(120)
-            $0.height.equalTo(32)
+        settingsView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
         }
     }
-        
-    @objc func dismissSettings() {
+    
+    @objc func logout() {
+        LoginPersistenceManager.clearData()
+        DatabaseManager.shared.deleteAllData()
+        print("outtt ", LoginPersistenceManager.getData())
+
         dismiss(animated: true)
     }
 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		140EED292D821B6800F01CA3 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 140EED282D821B6800F01CA3 /* SnapKit */; };
+		1491FB162DB7AACC00EC3397 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 1491FB152DB7AACC00EC3397 /* GRDB */; };
 		14A656432D941D5400D8F01F /* SofaAcademic in Frameworks */ = {isa = PBXBuildFile; productRef = 14A656422D941D5400D8F01F /* SofaAcademic */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1491FB162DB7AACC00EC3397 /* GRDB in Frameworks */,
 				14A656432D941D5400D8F01F /* SofaAcademic in Frameworks */,
 				140EED292D821B6800F01CA3 /* SnapKit in Frameworks */,
 			);
@@ -87,6 +89,7 @@
 			packageProductDependencies = (
 				140EED282D821B6800F01CA3 /* SnapKit */,
 				14A656422D941D5400D8F01F /* SofaAcademic */,
+				1491FB152DB7AACC00EC3397 /* GRDB */,
 			);
 			productName = Sofascore2025;
 			productReference = 1445C7FF2D7873F8005158BE /* Sofascore2025.app */;
@@ -118,8 +121,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				140EED272D821B6800F01CA3 /* XCRemoteSwiftPackageReference "SnapKit" */,
-				143FCC802D92085400A15479 /* XCLocalSwiftPackageReference "../../hw3/academy2" */,
 				14A656412D941D5400D8F01F /* XCRemoteSwiftPackageReference "academy" */,
+				1491FB142DB7AACC00EC3397 /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1445C8002D7873F8005158BE /* Products */;
@@ -350,13 +353,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		143FCC802D92085400A15479 /* XCLocalSwiftPackageReference "../../hw3/academy2" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../../hw3/academy2;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
 		140EED272D821B6800F01CA3 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -364,6 +360,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 5.7.1;
+			};
+		};
+		1491FB142DB7AACC00EC3397 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
 			};
 		};
 		14A656412D941D5400D8F01F /* XCRemoteSwiftPackageReference "academy" */ = {
@@ -381,6 +385,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 140EED272D821B6800F01CA3 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		1491FB152DB7AACC00EC3397 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1491FB142DB7AACC00EC3397 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
 		};
 		14A656422D941D5400D8F01F /* SofaAcademic */ = {
 			isa = XCSwiftPackageProductDependency;

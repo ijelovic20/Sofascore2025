@@ -12,27 +12,51 @@ class ViewController: UIViewController, BaseViewProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        fetchEvents(sport: selectedSport.apiSlug)
-        
         menu.onSportSelected = { selectedSport in
             self.selectedSport = selectedSport
             self.fetchEvents(sport: selectedSport.apiSlug)
         }
         header.delegate = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
 
-        addViews()
-        styleViews()
-        setupConstraints()
+        if shouldShowLogin() {
+            let loginVC = LoginViewController()
+            navigationController?.pushViewController(loginVC, animated: false)
+        } else {
+            addViews()
+            styleViews()
+            setupConstraints()
+            fetchEvents(sport: selectedSport.apiSlug)
+        }
+    }
+    
+    private func shouldShowLogin() -> Bool {
+        return LoginPersistenceManager.getData().token == nil
     }
 
     private func fetchEvents(sport: String) {
         Task {
             do {
                 let events = try await APIClient.fetchEvents(forSport: sport)
+
                 self.groupedEvents = Dictionary(grouping: events, by: { $0.league.id }).compactMap { (_, events) in
-                    guard let league = events.first?.league else { return nil }
+                    let league = events.first?.league
                     return (league, events)
                 }
+
+                do {
+                    let leagues = groupedEvents.compactMap { $0.league }
+                    let allEvents = groupedEvents.flatMap { $0.events }
+
+                    try DatabaseManager.shared.saveLeagues(leagues)
+                    try DatabaseManager.shared.saveEvents(allEvents)
+                } catch {
+                    print("Greska \(error)")
+                }
+
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
@@ -135,7 +159,7 @@ extension ViewController: UITableViewDelegate {
 // MARK: - HeaderViewDelegate
 extension ViewController: HeaderViewDelegate {
     func didTapSettings() {
-        let settingsVC: SettingsViewController = .init()
+        let settingsVC = SettingsViewController()
         settingsVC.modalPresentationStyle = .fullScreen
         present(settingsVC, animated: true)
     }
