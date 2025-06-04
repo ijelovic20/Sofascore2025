@@ -2,7 +2,7 @@ import Foundation
 
 class APIClient {
     static func fetchEvents(forSport slug: String) async throws -> [Event] {
-        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/secure/events?sport=\(slug)"
+        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/events?sport=\(slug)"
         
         guard let url = URL(string: urlString) else {
             throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
@@ -38,5 +38,24 @@ class APIClient {
             throw NSError(domain: "APIClient", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP Error \(httpResponse.statusCode)"])
         }
         return try JSONDecoder().decode(LoginResponse.self, from: data)
+    }
+    
+    static func fetchIncidents(forEventId eventId: Int) async throws -> [Incident] {
+        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/events/\(eventId)/incidents"
+            
+        guard let url = URL(string: urlString) else {
+            throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        guard let token = LoginPersistenceManager.getData().token else {
+            throw NSError(domain: "APIClient", code: 401, userInfo: [NSLocalizedDescriptionKey: "Missing authentication token"])
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode([Incident].self, from: data)
     }
 }

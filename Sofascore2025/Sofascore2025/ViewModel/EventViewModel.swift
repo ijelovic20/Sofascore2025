@@ -3,6 +3,7 @@ import UIKit
 import SofaAcademic
 
 struct EventViewModel {
+    let eventId: Int
     let homeTeamName: String
     let awayTeamName: String
     var homeScoreText: String
@@ -20,6 +21,7 @@ struct EventViewModel {
     let statusAlpha: CGFloat
 
     init(event: Event) {
+        self.eventId = event.id
         self.homeTeamName = event.homeTeam.name
         self.awayTeamName = event.awayTeam.name
         self.homeScoreText = String(event.homeScore ?? 0)

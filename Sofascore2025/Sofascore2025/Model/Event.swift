@@ -9,4 +9,6 @@ struct Event: Codable {
     let league: League
     let homeScore: Int?
     let awayScore: Int?
+    let round: Int?
+    let incidents: [Incident]?
 }

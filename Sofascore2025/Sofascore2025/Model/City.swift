@@ -1,5 +1,5 @@
 import Foundation
 
-struct Country: Codable {
+struct City: Codable {
     let name: String
 }
