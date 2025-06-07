@@ -73,12 +73,20 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
     func setupConstraints() {
         eventDetailView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
+            $0.height.equalTo(200)
         }
 
-        activeDetailSubview.snp.makeConstraints {
-            $0.top.equalTo(eventDetailView.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(8)
-            $0.bottom.equalToSuperview()
+        if event.matchStatus == .notStarted {
+            activeDetailSubview.snp.makeConstraints {
+                $0.top.equalTo(eventDetailView.snp.bottom).offset(8)
+                $0.leading.trailing.equalToSuperview().inset(8)
+            }
+        } else {
+            activeDetailSubview.snp.makeConstraints {
+                $0.top.equalTo(eventDetailView.snp.bottom).offset(8)
+                $0.leading.trailing.equalToSuperview().inset(8)
+                $0.bottom.equalToSuperview()
+            }
         }
 
         if event.matchStatus != .notStarted {
@@ -102,10 +110,10 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         Task {
             do {
                 let incidents = try await APIClient.fetchIncidents(forEventId: event.eventId)
+                print(incidents)
 
-                let sortedIncidents = incidents.sorted {
-                    ($0.minute ?? 0) > ($1.minute ?? 0)
-                }
+                let groupedByMinute = Dictionary(grouping: incidents, by: { $0.minute ?? -1 })
+                let sortedMinutes = groupedByMinute.keys.sorted(by: >)
 
                 DispatchQueue.main.async {
                     self.incidentStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -117,14 +125,18 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
                         self.incidentStackView.addArrangedSubview(firstHalfHeader)
                     }
 
-                    for incident in sortedIncidents {
-                        if incident.type == .periodEnd {
+                    for minute in sortedMinutes {
+                        guard let incidentsForMinute = groupedByMinute[minute] else { continue }
+
+                        if let periodEndIncident = incidentsForMinute.first(where: { $0.type == .periodEnd }) {
                             let header = HeaderIncidentView()
-                            header.configure(with: [incident], event: self.event)
+                            header.configure(with: [periodEndIncident], event: self.event)
                             self.incidentStackView.addArrangedSubview(header)
-                        } else {
+                        }
+
+                        for incident in incidentsForMinute where incident.type != .periodEnd {
                             let detail = IncidentDetailView()
-                            detail.configure(with: incident)
+                            detail.configure(with: incident, sportName: self.sportName)
                             self.incidentStackView.addArrangedSubview(detail)
                         }
                     }

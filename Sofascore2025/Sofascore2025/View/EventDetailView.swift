@@ -115,7 +115,6 @@ class EventDetailView: BaseView {
         homeTeamName.snp.makeConstraints{
             $0.top.equalTo(homeTeamImage.snp.bottom).offset(8)
             $0.centerX.equalTo(homeTeamImage)
-            $0.bottom.equalToSuperview().inset(16)
             $0.width.equalTo(96)
         }
         

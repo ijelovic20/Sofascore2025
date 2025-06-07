@@ -20,7 +20,7 @@ class UpcomingEventView: BaseView{
         containerView.layer.cornerRadius = 8
         
         incidentLabel.font = .robotoRegular14
-        incidentLabel.textColor = .incidentLabel
+        incidentLabel.textColor = .customGray
         incidentLabel.text = "No results yet."
         
         button.titleLabel?.font = .robotoBold16
@@ -33,7 +33,7 @@ class UpcomingEventView: BaseView{
     override func setupConstraints() {
         containerView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview().inset(8)
-            $0.centerY.equalToSuperview().inset(16)
+            //$0.centerX.equalToSuperview().inset(16)
         }
         
         incidentLabel.snp.makeConstraints {
@@ -45,6 +45,7 @@ class UpcomingEventView: BaseView{
             $0.top.equalTo(containerView.snp.bottom).offset(16)
             $0.centerX.equalTo(containerView)
             $0.width.equalTo(212)
+            $0.bottom.equalToSuperview().inset(8)
         }
     }
 }
