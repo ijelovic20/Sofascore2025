@@ -33,7 +33,6 @@ class UpcomingEventView: BaseView{
     override func setupConstraints() {
         containerView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview().inset(8)
-            //$0.centerX.equalToSuperview().inset(16)
         }
         
         incidentLabel.snp.makeConstraints {

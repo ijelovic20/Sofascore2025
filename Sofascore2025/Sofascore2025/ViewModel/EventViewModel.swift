@@ -20,13 +20,13 @@ struct EventViewModel {
     let statusString: String
     let statusAlpha: CGFloat
 
-    init(event: Event) {
+    init(event: Event, dateInsteadOfTime: Bool = false) {
         self.eventId = event.id
         self.homeTeamName = event.homeTeam.name
         self.awayTeamName = event.awayTeam.name
         self.homeScoreText = String(event.homeScore ?? 0)
         self.awayScoreText = String(event.awayScore ?? 0)
-        self.formattedTime = Self.formatTime(timestamp: event.startTimestamp)
+        self.formattedTime = Self.formatTime(timestamp: event.startTimestamp, useDate: dateInsteadOfTime)
         self.matchStatus = EventMatchStatus(rawValue: event.status.rawValue) ?? .notStarted
         self.homeTeamLogoURL = URL(string: event.homeTeam.logoUrl)
         self.awayTeamLogoURL = URL(string: event.awayTeam.logoUrl)
@@ -41,14 +41,15 @@ struct EventViewModel {
 
         switch event.status {
         case EventMatchStatus(rawValue: "IN_PROGRESS") ?? nil:
-                let currentTime = Int(Date().timeIntervalSince1970)
-                matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
-                statusString = "\(matchMinute ?? 0)′"
-                statusColor = .customRed
-                statusAlpha = 1.0
+            let currentTime = Int(Date().timeIntervalSince1970)
+            matchMinute = max((currentTime - event.startTimestamp) / 60, 0)
+            statusString = "\(matchMinute ?? 0)′"
+            statusColor = .customRed
+            statusAlpha = 1.0
+
         case EventMatchStatus(rawValue: "FINISHED") ?? nil:
-                statusString = "FT"
-                statusAlpha = 0.4
+            statusString = "FT"
+            statusAlpha = 0.4
             if let homeScore = event.homeScore, let awayScore = event.awayScore {
                 if homeScore > awayScore {
                     homeAlpha = 1.0
@@ -64,18 +65,22 @@ struct EventViewModel {
                 homeAlpha = 0.4
                 awayAlpha = 0.4
             }
+
         case EventMatchStatus(rawValue: "NOT_STARTED") ?? nil:
-                statusString = "-"
-                statusAlpha = 0.4
-                self.homeScoreText = ""
-                self.awayScoreText = ""
+            statusString = "-"
+            statusAlpha = 0.4
+            self.homeScoreText = ""
+            self.awayScoreText = ""
+
         case EventMatchStatus(rawValue: "HALF_TIME") ?? nil:
-                statusString = "HT"
-                statusColor = .customRed
-                statusAlpha = 1.0
-            default:
-                statusString = "-"
+            statusString = "HT"
+            statusColor = .customRed
+            statusAlpha = 1.0
+
+        default:
+            statusString = "-"
         }
+
         self.homeAlpha = homeAlpha
         self.awayAlpha = awayAlpha
         self.statusColor = statusColor
@@ -84,10 +89,10 @@ struct EventViewModel {
         self.statusAlpha = statusAlpha
     }
 
-    private static func formatTime(timestamp: Int) -> String {
+    private static func formatTime(timestamp: Int, useDate: Bool = false) -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
         let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
+        formatter.dateFormat = useDate ? "dd.MM.yy" : "HH:mm"
         formatter.timeZone = .current
         return formatter.string(from: date)
     }
