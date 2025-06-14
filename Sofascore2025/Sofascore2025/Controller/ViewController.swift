@@ -168,7 +168,7 @@ extension ViewController: UITableViewDelegate {
 
         guard section < groupedEvents.count, let league = groupedEvents[section].league else { return }
 
-        let leagueDetailVC = LeagueDetailViewController(league: league)
+        let leagueDetailVC = LeagueDetailViewController(league: league, selectedSport: selectedSport)
         navigationController?.pushViewController(leagueDetailVC, animated: true)
     }
 }

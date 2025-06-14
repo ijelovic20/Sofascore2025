@@ -77,4 +77,23 @@ class APIClient {
         let (data, _) = try await URLSession.shared.data(for: request)
         return try JSONDecoder().decode([Event].self, from: data)
     }
+    
+    static func fetchStandings(forLeagueId leagueId: Int) async throws -> [Standing] {
+        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/leagues/\(leagueId)/standings"
+
+        guard let url = URL(string: urlString) else {
+            throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        guard let token = LoginPersistenceManager.getData().token else {
+            throw NSError(domain: "APIClient", code: 401, userInfo: [NSLocalizedDescriptionKey: "Missing authentication token"])
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode([Standing].self, from: data)
+    }
 }
