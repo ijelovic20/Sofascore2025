@@ -35,8 +35,6 @@ class StandingsTableViewCell: UITableViewCell {
         case .basketball:
             let diff = (standing.scoreFor ?? 0) - (standing.scoreAgainst ?? 0)
             let pct = standing.percentage.map { String(format: "%.3f", $0) } ?? "-"
-            let streak = "-"
-            let gb = "-"
             
             values = [
                 "\(standing.position)",
@@ -45,8 +43,6 @@ class StandingsTableViewCell: UITableViewCell {
                 "\(standing.wins)",
                 "\(standing.losses)",
                 "\(diff)",
-                streak,
-                gb,
                 pct
             ]
         case .americanFootball:

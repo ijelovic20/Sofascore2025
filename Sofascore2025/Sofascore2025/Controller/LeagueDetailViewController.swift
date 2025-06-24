@@ -6,7 +6,7 @@ import SnapKit
 class LeagueDetailViewController: UIViewController, BaseViewProtocol {
     private let league: League
     private let selectedSport: Sport
-    private let leagueDetailView = LeagueDetailView()
+    private let headerView = LeagueDetailView()
     private let tabMenu = MenuView<LeagueTab>(
         items: LeagueTab.allCases,
         titleProvider: { $0.rawValue }
@@ -50,7 +50,7 @@ class LeagueDetailViewController: UIViewController, BaseViewProtocol {
     }
 
     func addViews() {
-        view.addSubview(leagueDetailView)
+        view.addSubview(headerView)
         view.addSubview(tabMenu)
         view.addSubview(matchesTableView)
         view.addSubview(standingsTableView)
@@ -61,13 +61,13 @@ class LeagueDetailViewController: UIViewController, BaseViewProtocol {
     }
 
     func setupConstraints() {
-        leagueDetailView.snp.makeConstraints {
+        headerView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.height.equalTo(180)
         }
 
         tabMenu.snp.makeConstraints {
-            $0.top.equalTo(leagueDetailView.snp.bottom)
+            $0.top.equalTo(headerView.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(48)
         }
@@ -84,9 +84,15 @@ class LeagueDetailViewController: UIViewController, BaseViewProtocol {
     }
 
     func setupBindings() {
-        leagueDetailView.configure(league: league)
+        let headerViewModel = HeaderViewModel(
+            teamId: nil,
+            imageUrl: league.logoUrl,
+            title: league.name,
+            subtitle: league.country?.name ?? ""
+        )
+        headerView.configure(with: headerViewModel)
 
-        leagueDetailView.backButtonTappedPublisher
+        headerView.backButtonTappedPublisher
             .sink { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }
@@ -226,5 +232,21 @@ extension LeagueDetailViewController: UITableViewDataSource, UITableViewDelegate
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         tableView == standingsTableView ? 0 : 48
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView == standingsTableView {
+            let standing = standings[indexPath.row]
+            
+            let headerViewModel = HeaderViewModel(
+                teamId: standing.team.id,
+                imageUrl: standing.team.logoUrl,
+                title: standing.team.name,
+                subtitle: standing.team.country?.name ?? ""
+            )
+            
+            let teamDetailVC = TeamDetailViewController(headerViewModel: headerViewModel)
+            navigationController?.pushViewController(teamDetailVC, animated: true)
+        }
     }
 }

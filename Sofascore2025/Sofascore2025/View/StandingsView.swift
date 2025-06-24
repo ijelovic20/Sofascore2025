@@ -7,7 +7,6 @@ class StandingsView: BaseView {
     private var headerTitles: [String] = []
     private var currentSport: Sport?
     private var standings: [Standing] = []
-
     let tableView = UITableView()
 
     override func addViews() {
@@ -85,7 +84,7 @@ class StandingsView: BaseView {
 
         switch sport {
         case .basketball:
-            headerTitles = ["#", "Team", "P", "W", "L", "DIFF", "Str", "GB", "PCT"]
+            headerTitles = ["#", "Team", "P", "W", "L", "DIFF", "PCT"]
         case .americanFootball:
             headerTitles = ["#", "Team", "P", "W", "D", "L", "PCT"]
         default:
@@ -100,7 +99,7 @@ class StandingsView: BaseView {
             label.text = title
             headerLabels.append(label)
         }
-
+        
         addViews()
         styleViews()
         setupConstraints()

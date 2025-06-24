@@ -42,6 +42,38 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
                 self?.navigationController?.popViewController(animated: true)
             }
             .store(in: &cancellables)
+        
+        eventDetailView.homeTeamTappedPublisher
+            .sink { [weak self] in
+                guard let self = self else { return }
+
+                let headerViewModel = HeaderViewModel(
+                    teamId: self.event.homeTeamId,
+                    imageUrl: self.event.homeTeamLogoURL?.absoluteString ?? "",
+                    title: self.event.homeTeamName,
+                    subtitle: self.league.countryName
+                )
+
+                let vc = TeamDetailViewController(headerViewModel: headerViewModel)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            .store(in: &cancellables)
+
+        eventDetailView.awayTeamTappedPublisher
+            .sink { [weak self] in
+                guard let self = self else { return }
+
+                let headerViewModel = HeaderViewModel(
+                    teamId: self.event.awayTeamId,
+                    imageUrl: self.event.awayTeamLogoURL?.absoluteString ?? "",
+                    title: self.event.awayTeamName,
+                    subtitle: self.league.countryName
+                )
+
+                let vc = TeamDetailViewController(headerViewModel: headerViewModel)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            .store(in: &cancellables)
 
         if event.matchStatus == .notStarted {
             activeDetailSubview = upcomingEventView
@@ -110,8 +142,6 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
         Task {
             do {
                 let incidents = try await APIClient.fetchIncidents(forEventId: event.eventId)
-                print(incidents)
-
                 let groupedByMinute = Dictionary(grouping: incidents, by: { $0.minute ?? -1 })
                 let sortedMinutes = groupedByMinute.keys.sorted(by: >)
 

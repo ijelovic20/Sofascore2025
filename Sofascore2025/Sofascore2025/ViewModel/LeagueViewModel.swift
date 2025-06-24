@@ -14,7 +14,7 @@ struct LeagueViewModel {
 
     init(league: League) {
         self.leagueName = league.name
-        self.countryName = league.country.name
+        self.countryName = league.country?.name ?? ""
         self.logoURL = URL(string: league.logoUrl)
     }
 }

@@ -1,8 +1,8 @@
 import Foundation
 
 struct TeamManager: Codable {
-    let id: Int64
+    let id: Int
     let name: String
-    let country: Country
-    let imageUrl: String?
+    let country: Country?
+    let imageUrl: String
 }

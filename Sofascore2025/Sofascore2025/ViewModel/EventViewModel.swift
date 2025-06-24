@@ -19,6 +19,8 @@ struct EventViewModel {
     let statusColor: UIColor
     let statusString: String
     let statusAlpha: CGFloat
+    let homeTeamId: Int
+    let awayTeamId: Int
 
     init(event: Event, dateInsteadOfTime: Bool = false) {
         self.eventId = event.id
@@ -31,6 +33,8 @@ struct EventViewModel {
         self.homeTeamLogoURL = URL(string: event.homeTeam.logoUrl)
         self.awayTeamLogoURL = URL(string: event.awayTeam.logoUrl)
         self.startTimestamp = event.startTimestamp
+        self.homeTeamId = event.homeTeam.id
+        self.awayTeamId = event.awayTeam.id
 
         var homeAlpha: CGFloat = 1.0
         var awayAlpha: CGFloat = 1.0

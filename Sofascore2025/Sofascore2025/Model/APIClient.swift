@@ -96,4 +96,75 @@ class APIClient {
         let (data, _) = try await URLSession.shared.data(for: request)
         return try JSONDecoder().decode([Standing].self, from: data)
     }
+    
+    static func fetchTeamInfo(forTeamID id: Int) async throws -> TeamInfo {
+        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/teams/\(id)"
+            
+        guard let url = URL(string: urlString) else {
+            throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+            
+        guard let token = LoginPersistenceManager.getData().token else {
+            throw NSError(domain: "APIClient", code: 401, userInfo: [NSLocalizedDescriptionKey: "Missing authentication token"])
+        }
+            
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+        let (data, response) = try await URLSession.shared.data(for: request)
+            
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+            throw NSError(domain: "APIClient", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP Error \(httpResponse.statusCode)"])
+        }
+            
+        return try JSONDecoder().decode(TeamInfo.self, from: data)
+    }
+    
+    static func fetchPlayers(forTeamId teamId: Int) async throws -> [Player] {
+        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/teams/\(teamId)/players"
+
+        guard let url = URL(string: urlString) else {
+            throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        guard let token = LoginPersistenceManager.getData().token else {
+            throw NSError(domain: "APIClient", code: 401, userInfo: [NSLocalizedDescriptionKey: "Missing authentication token"])
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+            throw NSError(domain: "APIClient", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP Error \(httpResponse.statusCode)"])
+        }
+        return try JSONDecoder().decode([Player].self, from: data)
+    }
+    
+    static func fetchTournaments(forTeamId teamId: Int) async throws -> [League] {
+        let urlString = "https://sofa-ios-academy-43194eec0621.herokuapp.com/teams/\(teamId)/tournaments"
+
+        guard let url = URL(string: urlString) else {
+            throw NSError(domain: "APIClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        guard let token = LoginPersistenceManager.getData().token else {
+            throw NSError(domain: "APIClient", code: 401, userInfo: [NSLocalizedDescriptionKey: "Missing authentication token"])
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 200 {
+            throw NSError(domain: "APIClient", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "HTTP Error \(httpResponse.statusCode)"])
+        }
+
+        return try JSONDecoder().decode([League].self, from: data)
+    }
 }
