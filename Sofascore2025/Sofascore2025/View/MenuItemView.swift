@@ -57,4 +57,8 @@ extension MenuItemView {
         imageView.image = UIImage(named: imageName)
         return self
     }
+    
+    func hideImage() {
+        imageView.isHidden = true
+    }
 }

@@ -4,6 +4,8 @@ import Combine
 
 class EventDetailView: BaseView {
     let backButtonTappedPublisher = PassthroughSubject<Void, Never>()
+    let homeTeamTappedPublisher = PassthroughSubject<Void, Never>()
+    let awayTeamTappedPublisher = PassthroughSubject<Void, Never>()
     
     private let headerContainerView = UIView()
     private let backButton = UIImageView()
@@ -45,6 +47,15 @@ class EventDetailView: BaseView {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(backButtonTapped))
         backButton.addGestureRecognizer(tapGesture)
+        
+        homeTeamName.isUserInteractionEnabled = true
+        awayTeamName.isUserInteractionEnabled = true
+
+        let homeTap = UITapGestureRecognizer(target: self, action: #selector(homeTeamTapped))
+        homeTeamName.addGestureRecognizer(homeTap)
+
+        let awayTap = UITapGestureRecognizer(target: self, action: #selector(awayTeamTapped))
+        awayTeamName.addGestureRecognizer(awayTap)
         
         detailLabel.alpha = 0.4
         
@@ -115,7 +126,6 @@ class EventDetailView: BaseView {
         homeTeamName.snp.makeConstraints{
             $0.top.equalTo(homeTeamImage.snp.bottom).offset(8)
             $0.centerX.equalTo(homeTeamImage)
-            $0.bottom.equalToSuperview().inset(16)
             $0.width.equalTo(96)
         }
         
@@ -218,6 +228,14 @@ class EventDetailView: BaseView {
 
     @objc func backButtonTapped() {
         backButtonTappedPublisher.send(())
+    }
+    
+    @objc private func homeTeamTapped() {
+        homeTeamTappedPublisher.send(())
+    }
+
+    @objc private func awayTeamTapped() {
+        awayTeamTappedPublisher.send(())
     }
     
     private static func formatDate(timestamp: Int) -> String {

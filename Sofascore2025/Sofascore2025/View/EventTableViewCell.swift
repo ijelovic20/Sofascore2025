@@ -34,7 +34,9 @@ class EventTableViewCell: UITableViewCell, BaseViewProtocol {
     }
     
     func setupConstraints() {
-        eventView.snp.makeConstraints { $0.edges.equalToSuperview() }
+        eventView.snp.makeConstraints {
+            $0.edges.equalToSuperview().priority(.high)
+        }
     }
 
     func configure(with viewModel: EventViewModel) {

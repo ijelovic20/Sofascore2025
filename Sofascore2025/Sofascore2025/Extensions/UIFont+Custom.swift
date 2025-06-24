@@ -27,4 +27,12 @@ extension UIFont {
     static var robotoBold32: UIFont {
         return UIFont(name: "Roboto-Bold", size: 32) ?? UIFont.boldSystemFont(ofSize: 32)
     }
+    
+    static var robotoBold20: UIFont {
+        return UIFont(name: "Roboto-Bold", size: 20) ?? UIFont.boldSystemFont(ofSize: 20)
+    }
+    
+    static var robotoBold16: UIFont {
+        return UIFont(name: "Roboto-Bold", size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
+    }
 }

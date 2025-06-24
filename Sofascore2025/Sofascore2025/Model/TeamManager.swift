@@ -1,9 +1,8 @@
 import Foundation
 
-struct League: Codable {
+struct TeamManager: Codable {
     let id: Int
     let name: String
     let country: Country?
-    let logoUrl: String
-    let seasonId: Int?
+    let imageUrl: String
 }

@@ -2,7 +2,11 @@ import UIKit
 import SofaAcademic
 
 class ViewController: UIViewController, BaseViewProtocol {
-    private let menu = MenuView()
+    private let menu = MenuView<Sport>(
+        items: Sport.allCases,
+        titleProvider: { $0.rawValue },
+        imageProvider: { $0.iconName }
+    )
     private let tableView = UITableView(frame: .zero, style: .plain)
     private let header = HeaderView()
     private var selectedSport: Sport = .football
@@ -12,7 +16,7 @@ class ViewController: UIViewController, BaseViewProtocol {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        menu.onSportSelected = { selectedSport in
+        menu.onItemSelected = { selectedSport in
             self.selectedSport = selectedSport
             self.fetchEvents(sport: selectedSport.apiSlug)
         }
@@ -136,6 +140,12 @@ extension ViewController: UITableViewDelegate {
         guard let league = groupedEvents[section].league else { return nil }
         let header = LeagueView()
         header.configure(with: LeagueViewModel(league: league))
+        
+        header.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapLeagueHeader(_:)))
+        header.addGestureRecognizer(tapGesture)
+        header.tag = section
+        
         return header
     }
     
@@ -143,16 +153,23 @@ extension ViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: false)
 
         let event = groupedEvents[indexPath.section].events[indexPath.row]
-        
-        guard let league = groupedEvents[indexPath.section].league else {
-            return
-        }
+        guard let league = groupedEvents[indexPath.section].league else { return }
 
         let leagueViewModel = LeagueViewModel(league: league)
         let eventViewModel = EventViewModel(event: event)
 
         let detailsVC = EventDetailsViewController(event: eventViewModel, league: leagueViewModel, sportName: selectedSport)
         navigationController?.pushViewController(detailsVC, animated: true)
+    }
+    
+    @objc private func didTapLeagueHeader(_ sender: UITapGestureRecognizer) {
+        guard let headerView = sender.view else { return }
+        let section = headerView.tag
+
+        guard section < groupedEvents.count, let league = groupedEvents[section].league else { return }
+
+        let leagueDetailVC = LeagueDetailViewController(league: league, selectedSport: selectedSport)
+        navigationController?.pushViewController(leagueDetailVC, animated: true)
     }
 }
 

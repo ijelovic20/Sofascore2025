@@ -56,7 +56,7 @@ final class DatabaseManager {
         try db.execute(sql: SQLQueries.insertLeague.rawValue, arguments: [
             league.id,
             league.name,
-            league.country.name,
+            league.country?.name ?? "",
             league.logoUrl
         ])
     }

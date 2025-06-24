@@ -1,30 +1,26 @@
 import UIKit
 import SofaAcademic
 import Combine
+import SnapKit
 
 class EventDetailsViewController: UIViewController, BaseViewProtocol {
     private let event: EventViewModel
     private let league: LeagueViewModel
     var sportName: Sport
     
-    private let eventDetailView: EventDetailView  = .init()
-    
+    private let scrollView = UIScrollView()
+    private let eventDetailView: EventDetailView = .init()
+    private let upcomingEventView: UpcomingEventView = .init()
+    private let incidentStackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.spacing = 8
+        return stack
+    }()
+
+    private var activeDetailSubview: UIView!
     private var cancellables = Set<AnyCancellable>()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        eventDetailView.configure(with: event, league: league, sportName: sportName.rawValue)
-        
-        eventDetailView.backButtonTappedPublisher.sink { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }.store(in: &cancellables)
-        
-        addViews()
-        styleViews()
-        setupConstraints()
-    }
-    
+
     init(event: EventViewModel, league: LeagueViewModel, sportName: Sport) {
         self.event = event
         self.league = league
@@ -35,9 +31,70 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        eventDetailView.configure(with: event, league: league, sportName: sportName.rawValue)
+
+        eventDetailView.backButtonTappedPublisher
+            .sink { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            }
+            .store(in: &cancellables)
+        
+        eventDetailView.homeTeamTappedPublisher
+            .sink { [weak self] in
+                guard let self = self else { return }
+
+                let headerViewModel = HeaderViewModel(
+                    teamId: self.event.homeTeamId,
+                    imageUrl: self.event.homeTeamLogoURL?.absoluteString ?? "",
+                    title: self.event.homeTeamName,
+                    subtitle: self.league.countryName
+                )
+
+                let vc = TeamDetailViewController(headerViewModel: headerViewModel)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            .store(in: &cancellables)
+
+        eventDetailView.awayTeamTappedPublisher
+            .sink { [weak self] in
+                guard let self = self else { return }
+
+                let headerViewModel = HeaderViewModel(
+                    teamId: self.event.awayTeamId,
+                    imageUrl: self.event.awayTeamLogoURL?.absoluteString ?? "",
+                    title: self.event.awayTeamName,
+                    subtitle: self.league.countryName
+                )
+
+                let vc = TeamDetailViewController(headerViewModel: headerViewModel)
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            .store(in: &cancellables)
+
+        if event.matchStatus == .notStarted {
+            activeDetailSubview = upcomingEventView
+        } else {
+            scrollView.addSubview(incidentStackView)
+            activeDetailSubview = scrollView
+        }
+
+        addViews()
+        styleViews()
+        setupConstraints()
+        setupGestureRecognizers()
+
+        if event.matchStatus != .notStarted {
+            fetchAndDisplayIncidents()
+        }
+    }
+
     func addViews() {
         view.addSubview(eventDetailView)
+        view.addSubview(activeDetailSubview)
     }
 
     func styleViews() {
@@ -48,7 +105,27 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
     func setupConstraints() {
         eventDetailView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
-            $0.bottom.lessThanOrEqualToSuperview()
+            $0.height.equalTo(200)
+        }
+
+        if event.matchStatus == .notStarted {
+            activeDetailSubview.snp.makeConstraints {
+                $0.top.equalTo(eventDetailView.snp.bottom).offset(8)
+                $0.leading.trailing.equalToSuperview().inset(8)
+            }
+        } else {
+            activeDetailSubview.snp.makeConstraints {
+                $0.top.equalTo(eventDetailView.snp.bottom).offset(8)
+                $0.leading.trailing.equalToSuperview().inset(8)
+                $0.bottom.equalToSuperview()
+            }
+        }
+
+        if event.matchStatus != .notStarted {
+            incidentStackView.snp.makeConstraints {
+                $0.edges.equalToSuperview()
+                $0.width.equalToSuperview()
+            }
         }
     }
 
@@ -59,5 +136,44 @@ class EventDetailsViewController: UIViewController, BaseViewProtocol {
 
     @objc func backButtonTapped() {
         navigationController?.popViewController(animated: true)
+    }
+
+    private func fetchAndDisplayIncidents() {
+        Task {
+            do {
+                let incidents = try await APIClient.fetchIncidents(forEventId: event.eventId)
+                let groupedByMinute = Dictionary(grouping: incidents, by: { $0.minute ?? -1 })
+                let sortedMinutes = groupedByMinute.keys.sorted(by: >)
+
+                DispatchQueue.main.async {
+                    self.incidentStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+                    if self.event.matchStatus == .inProgress {
+                        let firstHalfHeader = HeaderIncidentView()
+                        let resultText = "First Half (\(self.event.homeScoreText)-\(self.event.awayScoreText))"
+                        firstHalfHeader.configure(title: resultText)
+                        self.incidentStackView.addArrangedSubview(firstHalfHeader)
+                    }
+
+                    for minute in sortedMinutes {
+                        guard let incidentsForMinute = groupedByMinute[minute] else { continue }
+
+                        if let periodEndIncident = incidentsForMinute.first(where: { $0.type == .periodEnd }) {
+                            let header = HeaderIncidentView()
+                            header.configure(with: [periodEndIncident], event: self.event)
+                            self.incidentStackView.addArrangedSubview(header)
+                        }
+
+                        for incident in incidentsForMinute where incident.type != .periodEnd {
+                            let detail = IncidentDetailView()
+                            detail.configure(with: incident, sportName: self.sportName)
+                            self.incidentStackView.addArrangedSubview(detail)
+                        }
+                    }
+                }
+            } catch {
+                print("error ", error)
+            }
+        }
     }
 }
